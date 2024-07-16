@@ -3,7 +3,7 @@ import mysql.connector
 # Configuration de la connexion à la base de données
 db_config = {
     'user': 'root',
-    'password': 'pass',
+    'password': 'yusra',
     'host': 'localhost',
     'database': 'arh',
     'raise_on_warnings': True
