@@ -7,12 +7,13 @@ import { Sidebar } from "flowbite-react";
 import TableInv from "./Components.jsx/tableInv";
 import TableCharge from "./Components.jsx/tableCharge";
 import EcritsTable from "./Components.jsx/ecrit";
+import Tabs from "./Pages/tabs.jsx";
 function App() {
   return (
     <div className="flex h-screen">
-      <TableInv />
+      <Component />
+      <EcritsTable />
     </div>
   );
 }
-
 export default App;

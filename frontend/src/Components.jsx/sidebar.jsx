@@ -17,9 +17,9 @@ const Component = () => {
   const [selectedUsine, setSelectedUsine] = useState(null);
   const [units, setUnits] = useState([]);
 
-  /*useEffect(() => {
+  useEffect(() => {
     getUsines(1); // Replace with the appropriate operateurId
-  }, []);*/
+  }, []);
 
   const getUsines = async (operateurId) => {
     try {
@@ -27,7 +27,7 @@ const Component = () => {
         `http://127.0.0.1:5000/operator/${operateurId}`
       );
       setUsines(response.data);
-      console.log(response.data);
+      console.log("unites");
     } catch (error) {
       console.error("Error getting usines:", error);
     }
@@ -44,8 +44,6 @@ const Component = () => {
       console.error("Error getting units:", error);
     }
   };
-
-  getUsines(1);
 
   return (
     <div className="h-screen">
