@@ -153,7 +153,7 @@ const Tableau = ({ IDClasse }) => {
       <Table size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
-            <TableCell>NomSR</TableCell>
+            <TableCell>Année </TableCell>
             {years.map((year) => (
               <TableCell key={year} align="center">
                 {year}

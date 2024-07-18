@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function EcritsTable() {
-  const [ecrits, setEcrits] = useState([]);
+export default function ParamsTable() {
+  const [params, setParams] = useState([]);
 
   useEffect(() => {
     const getEcrits = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/ecrit", {
+        const response = await axios.get("http://127.0.0.1:5000/param", {
           params: {
-            OperateurID: 1,
+            UnityID: 1,
           },
         });
-        setEcrits(response.data); // Assuming the API response is an array of objects
+        setParams(response.data); // Assuming the API response is an array of objects
       } catch (error) {
         console.error("Error fetching écrits:", error);
       }
@@ -22,9 +22,6 @@ export default function EcritsTable() {
 
   return (
     <div className="w-full h-full mx-6 mt-15">
-      <h1 className="text-center text-3xl font-bold mb-4">
-        Liste des écrits envoyés
-      </h1>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
           <thead className="ltr:text-left rtl:text-right">
@@ -33,27 +30,27 @@ export default function EcritsTable() {
                 Description
               </th>
               <th className="px-4 py-2 text-left text-lg font-bold text-gray-900">
-                Date d'envoi
+                Valeur
               </th>
               <th className="px-4 py-2"></th>
             </tr>
           </thead>
 
           <tbody className="divide-y-2 divide-gray-200">
-            {ecrits.map((ecrit) => (
-              <tr key={ecrit.idecrit}>
+            {params.map((ecrit) => (
+              <tr key={ecrit.codePO}>
                 <td className="px-4 py-2 text-left text-gray-900">
-                  {ecrit.description}
+                  {ecrit.codePO}
                 </td>
                 <td className="px-4 py-2 text-left text-gray-700">
-                  {ecrit.date}
+                  {ecrit.valeur}
                 </td>
                 <td className="px-4 py-2">
                   <a
                     href={ecrit.lien}
                     className="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700"
                   >
-                    View
+                    Modifier
                   </a>
                 </td>
               </tr>

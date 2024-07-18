@@ -1,19 +1,34 @@
-from flask import Blueprint, request, jsonify
-from .db import get_db
-
+from flask import Blueprint, jsonify, request
+from .db import get_db  # Importer la fonction get_db depuis le module principal
+from flask import Flask
+from flask_cors import CORS
+import mysql.connector
+from mysql.connector import pooling
+# Création du Blueprint
 saisit_bp = Blueprint('saisit', __name__)
 
-@saisit_bp.route('/', methods=['POST'])
-def saisir_data():
-    # Récupérer les données du formulaire ou de la requête JSON
-    data = request.json
-    
-    # Valider les données (optionnel selon vos besoins)
-    if not data:
-        return jsonify({'error': 'No data provided'}), 400
-    
+@saisit_bp.route('/get_classe', methods=['GET'])
+def get_classe():
+    conn = None
     try:
-        # Extraire les champs nécessaires de l'objet JSON avec les types corrects
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        query = "SELECT ID, NomClasse FROM Classe"
+        cursor.execute(query)
+        results = cursor.fetchall()
+        return jsonify(results), 200
+    except mysql.connector.Error as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+@saisit_bp.route('/', methods=['POST'])
+def insert_data():
+    conn = None
+    try:
+        data = request.json
+        # Extraire les données du JSON
         CCID = data.get('CCID', None)
         AnneeActuelle = data.get('AnneeActuelle', None)
         AnneePrevision = data.get('AnneePrevision', None)
@@ -25,88 +40,93 @@ def saisir_data():
         Valeur = data.get('Valeur', None)
         
         # Vérifier que les champs obligatoires sont présents et non vides
-        if None in [AnneeActuelle, AnneePrevision, UnityID, UsineID, OperateurID, IDClasse, codeSR, Valeur]:
+        if None in [CCID, AnneeActuelle, AnneePrevision, UnityID, UsineID, OperateurID, IDClasse, codeSR, Valeur]:
             return jsonify({'error': 'Missing required fields or fields are None'}), 400
         
         # Convertir les champs à leurs types respectifs
-        CCID = int(CCID) 
+        CCID = int(CCID)
         IDClasse = int(IDClasse)
-        Valeur = float(Valeur)   
+        Valeur = float(Valeur)
 
-        # Récupérer une connexion à la base de données
         conn = get_db()
         cursor = conn.cursor()
 
-        # Générer la requête INSERT avec les valeurs converties
+        # Exécuter l'insertion dans la base de données
         query = """
         INSERT INTO Saisit (CCID, AnneeActuelle, AnneePrevision, UnityID, UsineID, OperateurID, IDClasse, codeSR, Valeur)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(query, (CCID, AnneeActuelle, AnneePrevision, UnityID, UsineID, OperateurID, IDClasse, codeSR, Valeur))
-        
-        # Commit des modifications dans la base de données
         conn.commit()
 
-        # Réponse JSON pour indiquer le succès de l'opération
-        response = {'message': 'Données saisies avec succès', 'data': data}
-        return jsonify(response), 201
+        return jsonify({'message': 'Données insérées avec succès'}), 201
     except ValueError:
         return jsonify({'error': 'Invalid data type for IDClasse or Valeur'}), 400
-    except Exception as e:
-        # En cas d'erreur, annuler les modifications et renvoyer une erreur
-        conn.rollback()
+    except mysql.connector.Error as e:
+        if conn:
+            conn.rollback()
         return jsonify({'error': str(e)}), 500
     finally:
-        # Fermeture du curseur et de la connexion dans tous les cas
-        cursor.close()
-        conn.close()
+        if conn:
+            conn.close()
 
-
-@saisit_bp.route('/get_privisions', methods=['GET'])
-def get_saisit_data():
-
-    data = request.json
-    # Récupérer une connexion à la base de données
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-
+@saisit_bp.route('/get_all', methods=['GET'])
+def get_all():
+    conn = None
     try:
+        IDClasse = request.args.get('IDClasse', None)
+        AnneeActuelle = request.args.get('AnneeActuelle', None)
+        AnneePrevision = request.args.get('AnneePrevision', None)
+        UnityID = request.args.get('UnityID', None)
+        CodeSR = request.args.get('CodeSR', None)
 
- 
-        CCID = data.get('CCID', None)
-        AnneeActuelle = data.get('AnneeActuelle', None)
-        UnityID = data.get('UnityID', None)
-        UsineID = data.get('UsineID', None)
-        OperateurID = data.get('OperateurID', None)
+        # Vérification des paramètres obligatoires
+        if None in [IDClasse, AnneeActuelle, AnneePrevision, UnityID, CodeSR]:
+            return jsonify({'error': 'All parameters are required'}), 400
 
-        query = "SELECT valide FROM ControleCout WHERE CCID=%s"
-        cursor.execute(query, (CCID))
-        valide = cursor.fetchall() 
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
 
+        query = """
+            SELECT Valeur 
+            FROM Saisit 
+            WHERE AnneeActuelle = %s 
+              AND AnneePrevision = %s 
+              AND UnityID = %s 
+              AND IDClasse = %s 
+              AND CodeSR = %s
+        """
 
-        # Exécuter la requête SELECT pour récupérer toutes les données de la table 'saisit'
-        query = "SELECT * FROM saisit WHERE CCID=%s AND AnneeActuelle=%s AND UnityID=%s AND UsineID=%s AND OperateurID=%s"
-        cursor.execute(query, (CCID, AnneeActuelle, UnityID, UsineID, OperateurID))
+        cursor.execute(query, (AnneeActuelle, AnneePrevision, UnityID, IDClasse, CodeSR))
         results = cursor.fetchall()
-
+        
         return jsonify(results), 200
-    
-    except Exception as e:
+
+    except mysql.connector.Error as e:
         return jsonify({'error': str(e)}), 500
-    
     finally:
-        # Toujours fermer le curseur et la connexion à la base de données
-        cursor.close()
-        conn.close()
+        if conn:
+            conn.close()
 
-@saisit_bp.route('/get_classe', methods=['GET'])
-def get_classe_SR():
+@saisit_bp.route('/get_SR', methods=['GET'])
+def get_SR():
+    conn = None
+    try:
+        IDClasse = request.args.get('IDClasse', None)
+        if IDClasse is None:
+            return jsonify({'error': 'IDClasse is required'}), 400
 
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True) 
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
 
-    query = "SELECT c.NomClasse, GROUP_CONCAT(sr.NomSR ORDER BY sr.codeSR SEPARATOR ', ') AS SousRubriques FROM Classe c LEFT JOIN SousRebrique sr ON c.ID = sr.IDClasse GROUP BY c.ID, c.NomClasse"
-    cursor.execute(query, )
-    results = cursor.fetchall()
+        query = """SELECT NomSR, codeSR FROM sousrebrique WHERE IDClasse = %s"""
+        cursor.execute(query, (IDClasse,))
+        results = cursor.fetchall()
+        
+        return jsonify(results), 200
 
-    return jsonify(results), 200
+    except mysql.connector.Error as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if conn:
+            conn.close()

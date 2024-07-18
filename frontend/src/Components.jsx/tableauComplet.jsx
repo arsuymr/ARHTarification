@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Tableau from "../Components.jsx/tableau";
 
-export default function Tabs() {
+export default function TableauComplet() {
   const [classes, setClasses] = useState([]);
 
   const getClasses = async () => {
