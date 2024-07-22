@@ -11,7 +11,7 @@ def get_usine(operateur_id):
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
         query = '''
-            SELECT NomUnity from Unity where UnityID IN ( SELECT unity.UnityID FROM USINE JOIN UNITY JOIN Operateur WHERE operateur.OperateurID = %s
+            SELECT NomUnity,UnityID from Unity where UnityID IN ( SELECT unity.UnityID FROM USINE JOIN UNITY JOIN Operateur WHERE operateur.OperateurID = %s
             )
         '''
         cursor.execute(query, (operateur_id,))
@@ -46,3 +46,29 @@ def get_unity(usine_id):
             cursor.close()
         if conn:
             conn.close()
+
+
+@operator_bp.route('/addUnity', methods=['POST'])
+def add_unity(usine_id):
+    data = request.get_json()
+    username = data.get('UnityID')
+    email = data.get('NomUnity')
+    operateur_id=data.get('Typ')
+    password = generate_password_hash("Yusra")
+    #HADI TWELI RANDOM
+    conn = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s,"moderator", %s)'
+        cursor.execute(query, (username, email, password, operateur_id))
+        conn.commit()
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+    return jsonify({"message": "User created successfully"}), 201

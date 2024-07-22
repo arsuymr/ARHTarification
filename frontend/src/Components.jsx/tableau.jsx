@@ -7,8 +7,10 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
+import { useParams } from "react-router";
 
 const Tableau = ({ IDClasse }) => {
+  const { UnityID, OperateurID } = useParams();
   const [data, setData] = useState([]);
   const [nomsSR, setNomsSR] = useState([]);
   const [codeSRs, setCodeSRs] = useState([]);
@@ -126,19 +128,15 @@ const Tableau = ({ IDClasse }) => {
       // Replace with actual values or retrieve dynamically
       const AnneeActuelle = new Date().getFullYear();
       const AnneePrevision = years[colIndex];
-      const CCID = "1"; // Replace with the actual CCID value
-      const UnityID = "1"; // Replace with the actual UnityID value
-      const UsineID = "1"; // Replace with the actual UsineID value
-      const OperateurID = "1"; // Replace with the actual OperateurID value
       saisir(
         AnneeActuelle,
         AnneePrevision,
         codeSRs[rowIndex],
         parsedValue.toString(),
         1,
+        UnityID,
         1,
-        1,
-        1,
+        OperateurID,
         IDClasse
       );
     }
