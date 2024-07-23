@@ -1,16 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import SideBarOp from "./Components.jsx/sidebarOp";
-import EcritsTable from "./Components.jsx/ecrit";
-import Unity from "./Pages/unity";
-import Login from "./Components.jsx/login";
-import Register from "./Components.jsx/register";
 import Auth from "./Pages/auth";
 import AdminOp from "./Pages/AdminOp";
 import TableauComplet from "./Components.jsx/tableauComplet";
 import ParamsTable from "./Components.jsx/parametresop";
-import AddMod from "./Components.jsx/addMod";
 import Moderator from "./Pages/Moderator";
+import Unites from "./Pages/Unites";
 
 function App() {
   return (
@@ -30,6 +25,7 @@ function App() {
           path="/admin-op/:OperateurID/AjouterMod"
           element={<Moderator />}
         />
+        <Route path="/admin-op/:OperateurID/:UsineID" element={<Unites />} />
       </Routes>
     </Router>
   );

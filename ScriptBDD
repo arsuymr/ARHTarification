@@ -1,0 +1,127 @@
+CREATE DATABASE IF NOT EXISTS ARH;
+USE ARH;
+
+-- Table Operateur
+CREATE TABLE IF NOT EXISTS Operateur (
+    OperateurID int auto_increment primary key not null,
+    Nom_operateur VARCHAR(255) NOT NULL
+);
+
+-- Table Compte
+CREATE TABLE IF NOT EXISTS Users (
+    ID int auto_increment primary key not null,
+    Username VARCHAR(100),
+    Email VARCHAR(100) NOT NULL PRIMARY KEY,
+    pas VARCHAR(256) NOT NULL,
+    statut VARCHAR(20) DEFAULT 1,
+    OperateurID INT,
+    rol ENUM ('moderator','admin'),
+    Unique KEY (Username, email),
+    FOREIGN KEY (OperateurID) REFERENCES Operateur(OperateurID)
+);
+
+-- Table Usine
+CREATE TABLE if not exists Usine (
+    UsineID INT auto_increment primary key not null,
+    NomUsine varchar(100),
+    Wilaya VARCHAR(20) NOT NULL
+);
+
+-- Table Posseder
+CREATE TABLE IF NOT EXISTS Posseder (
+    OperateurID int,
+    UsineID int,
+    Activ BOOLEAN DEFAULT 1,
+    FOREIGN KEY (OperateurID) REFERENCES Operateur(OperateurID),
+    FOREIGN KEY (UsineID) REFERENCES Usine(UsineID),
+    PRIMARY KEY (OperateurID, UsineID)
+);
+
+-- Table Unity ( les Train)
+CREATE TABLE IF NOT EXISTS Unity (
+    UnityID int auto_increment primary key not null,
+    NomUnity varchar(50),
+    UsineID int,
+    typ ENUM ('liquefaction','separation','liquefaction et separation'),
+    FOREIGN KEY (UsineID) REFERENCES Usine(UsineID)
+);
+
+CREATE TABLE IF NOT EXISTS PrametreOperationel (
+    ID int auto_increment primary key not null,
+    UnityID int ,
+    codePO varchar(100),
+    valeur Float,
+    FOREIGN KEY (UnityID) REFERENCES Unity(UnityID)
+);
+
+-- Table ControleCout
+CREATE TABLE IF NOT EXISTS ControleCout (
+    Id INT AUTO_INCREMENT Primary key,
+    AnneeActuelle Year NOT NULL,
+    valide BOOLEAN,
+    UnityID int,
+    Unique KEY (AnneeActuelle, UnityID),
+    FOREIGN KEY (UnityID) REFERENCES Unity(UnityID),
+    Prevision integer
+);
+
+-- Table des calses
+create table if not exists Classe (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    NomClasse varchar(100)
+);
+-- Table TypeCC
+CREATE TABLE IF NOT EXISTS SousRebrique (
+    IDClasse Integer,
+    FOREIGN KEY (IDClasse) REFERENCES Classe(ID),
+    codeSR Varchar(20) not null,
+    PRIMARY KEY (codeSR, IDClasse),
+    NomSR varchar(100) NOT NULL,
+    calcule BOOLEAN NOT NULL
+);
+
+-- Table saisit
+CREATE TABLE IF NOT EXISTS Saisit (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    CCID integer,
+    AnneeActuelle Year NOT NULL,
+    AnneePrevision Year NOT NULL,
+    UnityID INT,
+    UsineID INT,
+    OperateurID INT,
+    IDClasse Integer ,
+    codeSR Varchar(20) not null,
+    Valeur Float ,
+    FOREIGN KEY (IDClasse) REFERENCES Classe(ID),
+    FOREIGN KEY (CodeSR) REFERENCES SousRebrique(CodeSR),
+    FOREIGN KEY (UnityID) REFERENCES Unity(UnityID),
+    FOREIGN KEY (CCID) REFERENCES ControleCout(Id),
+    FOREIGN KEY (UsineID) REFERENCES Usine(UsineID),
+    FOREIGN KEY (OperateurID) REFERENCES Operateur(OperateurID),
+    unique key (CCID, UnityID, AnneeActuelle, AnneePrevision, codeSR)
+);
+
+-- Table Parametres
+CREATE TABLE IF NOT EXISTS Parametres (
+    codeParam VARCHAR(100) PRIMARY KEY,
+    valeur FLOAT NOT NULL CHECK (valeur >= 0)
+);
+
+
+CREATE TABLE IF NOT EXISTS Resultat
+(
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    AnneeActuelle Year NOT NULL,
+    UnityID INT,
+    UsineID INT,
+    OperateurID INT,
+    IDClasse Integer ,
+    Valeur Float ,
+    codeSR Varchar(20) not null,
+    FOREIGN KEY (IDClasse) REFERENCES Classe(ID),
+    FOREIGN KEY (CodeSR) REFERENCES SousRebrique(CodeSR),
+    FOREIGN KEY (UnityID) REFERENCES Unity(UnityID),
+    FOREIGN KEY (UsineID) REFERENCES Usine(UsineID),
+    FOREIGN KEY (OperateurID) REFERENCES Operateur(OperateurID),
+    unique key ( UnityID, AnneeActuelle, codeSR)
+)

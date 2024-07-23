@@ -8,26 +8,34 @@ users_bp = Blueprint('users', __name__)
 def login():
     data = request.get_json()
     email = data.get('email')
-    password = data.get('pas')
-
-    conn = None
+    pas = data.get('pas')  # Ensure 'pas' refers to the password field
+    
+    if not email or not pas:
+        return jsonify({"error": "Email and password are required"}), 400
+    
     try:
         conn = get_db()
-        cursor = conn.cursor(dictionary=True)
-        query = 'SELECT * FROM users WHERE email = %s'
-        cursor.execute(query, (email,))
-        user = cursor.fetchone()
+        with conn.cursor(dictionary=True) as cursor:
+            query = 'SELECT * FROM Users WHERE Email = %s'
+            cursor.execute(query, (email,))
+            user = cursor.fetchone()
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    finally:
-        if conn:
-            conn.close()
 
-    if user and check_password_hash(user['pas'], password):
-        session['id'] = user['id']
-        session['rol'] = user['rol']
-        session['OperateurID'] = user['OperateurID']
-        return jsonify({"message": "Login successful", "rol": user['rol'], "OperateurID": user['OperateurID']}), 200
+    if not user or not check_password_hash(user['pas'], pas):  # Ensure 'pas' is the correct column
+        return jsonify({"error": "Invalid email or password"}), 401
+    
+    session['user_id'] = user['Username']
+    session['role'] = user['rol']
+    session['operator_id'] = user['OperateurID']
+    
+    return jsonify({
+        "message": "Login successful",
+        "rol": user['rol'],
+        "OperateurID": user['OperateurID']
+    }), 200
+
+
 
 @users_bp.route('/logout', methods=['POST'])
 def logout():
@@ -96,3 +104,51 @@ def get_mod():
 
     return jsonify(moderators), 200
 
+
+@users_bp.route('/CreateAdminARH', methods=['POST'])
+def create_adminARH():
+    data = request.get_json()
+    username = data.get('username')
+    email = data.get('email')
+    password = generate_password_hash("Yusra")
+    conn = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        query = 'INSERT INTO users (username, email, pas, rol) VALUES (%s, %s, %s,"admin")'
+        cursor.execute(query, (username, email, password))
+        conn.commit()
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+    return jsonify({"message": "Admin ARH created successfully"}), 201
+
+@users_bp.route('/CreateAdminOperator', methods=['POST'])
+def create_adminOp():
+    data = request.get_json()
+    username = data.get('username')
+    email = data.get('email')
+    operator_id=data.get('OperateurID')
+    #this must change
+    password = generate_password_hash("Yusra")
+    conn = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        query = 'INSERT INTO users (username, email, pas,rol,OperateurID) VALUES (%s, %s, %s,"admin",%s)'
+        cursor.execute(query, (username, email, password,operator_id))
+        conn.commit()
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+    return jsonify({"message": "Admin Operateur crée avec succès"}), 201

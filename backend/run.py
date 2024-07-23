@@ -9,7 +9,7 @@ from bleuprints.ParametreControler import param_bp
 from bleuprints.auth import users_bp
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
+app.secret_key = 'yz&_secret_key_here'
 CORS(app)
 
 # Enregistrement des blueprints

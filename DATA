@@ -1,0 +1,7 @@
+INSERT INTO Classe (NomClasse) VALUES ("Investissements"), ("Production"), ("Charges d'exploitation");
+INSERT INTO Operateur ( Nom_operateur ) VALUES ("SONATRACH"), ("NAFTAL"), ("RAFFINERIE");
+INSERT INTO Usine ( NomUsine, Wilaya ) VALUES 	("Alger","Alger"),("Arzew","Arzew");
+INSERT INTO Unity ( UsineID, NomUnity,typ ) VALUES 	(1,"GL1Z","liquefaction"),(1,"GL2Z","liquefaction");
+INSERT INTO posseder ( UsineID, OperateurID ) VALUES (1,1) , (2,1);
+INSERT INTO sousrebrique (IDClasse , codeSR, NomSR , calcule ) VALUES ( 1 , "Inv", "Investissements actualisé",0),(2 , "CP", "Charge du personnel",0),( 3 , "G", "Gasoline",0);
+

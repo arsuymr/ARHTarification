@@ -1,7 +1,6 @@
 import React from "react";
 
-
-function AdminARH({}) {
+function AdminARH() {
   return <div></div>;
 }
 
