@@ -9,15 +9,14 @@ import Paper from "@mui/material/Paper";
 import axios from "axios";
 import { useParams } from "react-router";
 
-const Tableau = ({ IDClasse }) => {
+const Tableau = ({ IDClasse, CCID }) => {
   const { UnityID, OperateurID } = useParams();
   const [data, setData] = useState([]);
   const [nomsSR, setNomsSR] = useState([]);
   const [codeSRs, setCodeSRs] = useState([]);
+  const [years, setYears] = useState([]);
 
-  const years = Array.from({ length: 19 }, (_, i) => 2024 + i);
 
-  // Function to fetch NomSR and codeSR for a given IDClasse
   const getSR = async (IDClasse) => {
     try {
       const response = await axios.get("http://127.0.0.1:5000/saisit/get_SR", {
@@ -33,22 +32,33 @@ const Tableau = ({ IDClasse }) => {
   // Function to fetch all data for the provided IDClasse and initial years
   const getALL = async (IDClasse, codeSRs) => {
     try {
-      const currentYear = new Date().getFullYear();
+      console.log(UnityID, CCID)
+      const yearsResponse = await axios.get("http://127.0.0.1:5000/saisit/get_recent_CC", {
+        params: { UnityID: UnityID }, // Use the actual UnityID here
+      });
+      const years = yearsResponse.data.years; // Assurez-vous que `years` est un tableau
+
+      // Assurez-vous que `years` est bien un tableau
+      if (!Array.isArray(years)) {
+        throw new Error('Years data is not an array');
+      }
+      setYears(years)
+      // Fetch all data for the provided IDClasse, codeSRs, and CCID
       const promises = codeSRs.map((codeSR) =>
         Promise.all(
           years.map((year) =>
             axios
               .get("http://127.0.0.1:5000/saisit/get_all", {
                 params: {
+                  CCID: CCID,
                   IDClasse: IDClasse,
-                  AnneeActuelle: currentYear,
                   AnneePrevision: year,
-                  UnityID: "1", // Replace with the actual UnityID value
-                  CodeSR: codeSR, // Use dynamic codeSR here
+                  UnityID: UnityID,
+                  CodeSR: codeSR,
                 },
               })
               .then((response) =>
-                response.data.length > 0 ? response.data[0].Valeur : "0.0"
+                response.data.data.length > 0 ? response.data.data[0].Valeur : "0.0"
               )
               .catch(() => "0.0")
           )
@@ -128,17 +138,24 @@ const Tableau = ({ IDClasse }) => {
       // Replace with actual values or retrieve dynamically
       const AnneeActuelle = new Date().getFullYear();
       const AnneePrevision = years[colIndex];
+      console.log("cooocoo", colIndex, years)
       saisir(
         AnneeActuelle,
         AnneePrevision,
         codeSRs[rowIndex],
         parsedValue.toString(),
-        1,
+        CCID,
         UnityID,
         1,
         OperateurID,
         IDClasse
       );
+    }
+  };
+
+  const handleKeyPress = (event, rowIndex, colIndex, value) => {
+    if (event.key === 'Enter') {
+      handleBlur(rowIndex, colIndex, value);
     }
   };
 
@@ -176,6 +193,9 @@ const Tableau = ({ IDClasse }) => {
                       }
                       onBlur={(e) =>
                         handleBlur(rowIndex, colIndex, e.target.value)
+                      }
+                      onKeyPress={(e) =>
+                        handleKeyPress(e, rowIndex, colIndex, e.target.value)
                       }
                       style={{ width: "60px", textAlign: "center" }}
                     />

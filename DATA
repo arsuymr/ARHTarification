@@ -1,7 +1,20 @@
-INSERT INTO Classe (NomClasse) VALUES ("Investissements"), ("Production"), ("Charges d'exploitation");
+INSERT INTO Classe (NomClasse) VALUES ("Investissements"), ("Charges d'exploitation"), ("Parametre Operationel"),("Production").("Tarifs").("CREU");
 INSERT INTO Operateur ( Nom_operateur ) VALUES ("SONATRACH"), ("NAFTAL"), ("RAFFINERIE");
 INSERT INTO Usine ( NomUsine, Wilaya ) VALUES 	("Alger","Alger"),("Arzew","Arzew");
-INSERT INTO Unity ( UsineID, NomUnity,typ ) VALUES 	(1,"GL1Z","liquefaction"),(1,"GL2Z","liquefaction");
+INSERT INTO Unity ( UsineID, NomUnity,typ ) VALUES 	(1,"GL1Z","liquefaction "),(1,"GL2Z","liquefaction");
 INSERT INTO posseder ( UsineID, OperateurID ) VALUES (1,1) , (2,1);
 INSERT INTO sousrebrique (IDClasse , codeSR, NomSR , calcule ) VALUES ( 1 , "Inv", "Investissements actualisé",0),(2 , "CP", "Charge du personnel",0),( 3 , "G", "Gasoline",0);
+INSERT INTO `arh`.`users` (`ID`, `Username`, `Email`, `pas`, `statut`, `OperateurID`, `rol`) VALUES ('1', 'admin', 'admin@gmail.com', 'pass', 'active', '1', 'admin');
+INSERT INTO `arh`.`sousrebrique` (`IDClasse`, `codeSR`, `NomSR`, `calcule`) VALUES ('4', 'PRP', 'Propane', '0');
+INSERT INTO `arh`.`sousrebrique` (`IDClasse`, `codeSR`, `NomSR`, `calcule`) VALUES ('4', 'BTN', 'Butane', '0');
+INSERT INTO `arh`.`sousrebrique` (`IDClasse`, `codeSR`, `NomSR`, `calcule`) VALUES ('2', 'CEXP', 'Charge d\'exploitation', '0');
+INSERT INTO `arh`.`sousrebrique` (`IDClasse`, `codeSR`, `NomSR`, `calcule`) VALUES ('3', 'QGA', 'Quantite du Gaz d\'alimentation', '0');
+INSERT INTO `arh`.`sousrebrique` (`IDClasse`, `codeSR`, `NomSR`, `calcule`) VALUES ('3', 'TAC', 'Taux AutoConsomation du Gaz', '0');
+INSERT INTO `arh`.`sousrebrique` (`IDClasse`, `codeSR`, `NomSR`, `calcule`) VALUES ('4', 'GZL', 'Gazoline', '0');
+INSERT INTO `arh`.`sousrebrique` (`IDClasse`, `codeSR`, `NomSR`, `calcule`) VALUES ('4', 'GNL', 'Gaz Naturel Liquifier', '0');
 
+INSERT INTO `arh`.`parametres` (`codeParam`, `NomParam`, `valeur`) VALUES ('FCU', 'Facteur Correcteur d\'utilisation', '0.15');
+INSERT INTO `arh`.`parametres` (`codeParam`, `NomParam`, `valeur`) VALUES ('DGN', 'Densite Gaz Naturel', '0.78');
+INSERT INTO `arh`.`parametres` (`codeParam`, `NomParam`, `valeur`) VALUES ('TA', 'Taux d\'actualisation', '0.015');
+INSERT INTO `arh`.`parametres` (`codeParam`, `NomParam`, `valeur`) VALUES ('PGN', 'Prix du Gaz Naturel', '8475');
+INSERT INTO `arh`.`parametres` (`codeParam`, `NomParam`, `valeur`) VALUES ('CTGNL', 'Convertion Tonne GNL --> Sm3', '1380');

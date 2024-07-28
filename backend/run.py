@@ -7,6 +7,8 @@ from bleuprints.OperatorControler import operator_bp
 from bleuprints.EcritControler import ecrit_bp
 from bleuprints.ParametreControler import param_bp
 from bleuprints.auth import users_bp
+from bleuprints.ResultatController import Resultat_bp
+
 
 app = Flask(__name__)
 app.secret_key = 'yz&_secret_key_here'
@@ -20,6 +22,8 @@ app.register_blueprint(operator_bp, url_prefix='/operator')
 app.register_blueprint(ecrit_bp, url_prefix='/ecrit')
 app.register_blueprint(param_bp, url_prefix='/param')
 app.register_blueprint(users_bp, url_prefix='/users')
+app.register_blueprint(Resultat_bp, url_prefix='/resultat')
+
 
 
 @app.route('/')

@@ -5,7 +5,7 @@ from mysql.connector import pooling
 # Configuration de la connexion à la base de données
 db_config = {
     'user': 'root',
-    'password': 'yusra',
+    'password': 'pass',
     'host': 'localhost',
     'database': 'arh',
     'raise_on_warnings': True
