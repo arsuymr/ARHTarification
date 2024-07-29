@@ -68,6 +68,30 @@ def create_user():
 
     return jsonify({"message": "User created successfully"}), 201
 
+@users_bp.route('/create_userARH', methods=['POST'])
+def create_userARH():
+    data = request.get_json()
+    username = data.get('username')
+    email = data.get('email')
+    password = generate_password_hash("Yusra")
+    #HADI TWELI RANDOM
+    conn = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        query = 'INSERT INTO users (username, email, pas, rol) VALUES (%s, %s, %s,"moderator", %s)'
+        cursor.execute(query, (username, email, password))
+        conn.commit()
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+    return jsonify({"message": "User created successfully"}), 201
+
 @users_bp.route('/get_mod', methods=['POST'])
 def get_mod():
     data = request.get_json()
@@ -103,6 +127,42 @@ def get_mod():
         moderators.append(moderator)
 
     return jsonify(moderators), 200
+
+
+@users_bp.route('/get_modARH', methods=['POST'])
+def get_modARH():
+    data = request.get_json()
+    conn = None
+    cursor = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        query = 'SELECT statut, username, email FROM users WHERE OperateurID=NUMM AND rol="moderator"'
+        cursor.execute(query)
+        results = cursor.fetchall()
+        conn.commit()
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    # Transforming the results to a list of dictionaries
+    moderators = []
+    for result in results:
+        moderator = {
+            "status_color": "green" if result[0] == 1 else "red",
+            "username": result[1],
+            "email": result[2]
+        }
+        moderators.append(moderator)
+
+    return jsonify(moderators), 200
+
 
 
 @users_bp.route('/CreateAdminARH', methods=['POST'])

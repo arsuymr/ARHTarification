@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import Card from "../Components.jsx/carte";
+import Card from "../../Components.jsx/carte";
+import SideBarARH from "../../Components.jsx/SideBarARH";
+import SideBarModARH from "../../Components.jsx/SideBarModARH";
 
-export default function Accueil() {
+export default function AccueilModARH() {
   const { OperateurID } = useParams();
   const [usines, setUsines] = useState([]);
   const navigate = useNavigate();
@@ -30,20 +32,23 @@ export default function Accueil() {
   };
 
   return (
-    <div className="flex flex-wrap gap-7 p-6">
-      {usines.length > 0 ? (
-        usines.map((usine) => (
-          <Card
-            key={usine.id}
-            NomUsine={usine.NomUsine}
-            Wilaya={usine.Wilaya}
-            UsineID={usine.UsineID}
-            onClick={() => handleCardClick(usine.UsineID)}
-          />
-        ))
-      ) : (
-        <p>No usines available</p>
-      )}
+    <div>
+      <SideBarModARH />
+      <div className="flex flex-wrap gap-7 p-6">
+        {usines.length > 0 ? (
+          usines.map((usine) => (
+            <Card
+              key={usine.id}
+              NomUsine={usine.NomUsine}
+              Wilaya={usine.Wilaya}
+              UsineID={usine.UsineID}
+              onClick={() => handleCardClick(usine.UsineID)}
+            />
+          ))
+        ) : (
+          <p>No usines available</p>
+        )}
+      </div>
     </div>
   );
 }

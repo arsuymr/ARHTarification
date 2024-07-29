@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Tabs from "./tabs";
-import SideBarOp from "./sidebarOp";
+import SideBarOp from "./SideBarOp";
 import { useParams } from "react-router";
 
 export default function ParamsTable() {

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import Card from "../Components.jsx/carte";
 import CardUnity from "../Components.jsx/carteUnite";
-import SideBarOp from "../Components.jsx/sidebarOp";
+import SideBarOp from "../Components.jsx/SideBarOp";
 
 export default function Unites() {
   const { UsineID } = useParams();
@@ -38,7 +37,7 @@ export default function Unites() {
             <CardUnity key={usine.id} NomUnity={usine.NomUnity} />
           ))
         ) : (
-          <p>No usines available</p>
+          <p>No unities available</p>
         )}
       </div>
     </div>

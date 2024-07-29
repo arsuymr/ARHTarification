@@ -11,17 +11,24 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      console.log("couco ", email, password);
+      console.log("Logging in with", email, password);
       const response = await axios.post("http://127.0.0.1:5000/users/login", {
         email: email,
         pas: password,
       });
       const { rol, OperateurID } = response.data;
+      console.log("piw", rol);
       if (rol === "admin" && OperateurID) {
         navigate(`/admin-op/${OperateurID}`);
+      } else if (rol === "admin") {
+        navigate("/admin-arh");
+      } else if (rol === "moderator" && OperateurID) {
+        navigate(`/mod-op/${OperateurID}`);
+      } else if (rol === "moderator") {
+        navigate("/mod-arh");
       } else {
-        // handle other roles or redirection
-        console.log("User is not an admin or does not have an OperateurID");
+        console.log("Role not recognized or missing OperateurID");
+        setError("Role not recognized or missing OperateurID");
       }
     } catch (error) {
       console.error("Error logging in:", error);

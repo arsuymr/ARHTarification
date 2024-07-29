@@ -14,7 +14,7 @@ import Modal from "./Modal"; // Import the Modal component
 import AddUsine from "./ajoutUsine";
 import AqUsine from "./aqUsine";
 
-const SideBarOp = ({ OperateurID }) => {
+const SideBarModOp = ({ OperateurID }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [usines, setUsines] = useState([]);
   const [units, setUnits] = useState([]);
@@ -42,7 +42,7 @@ const SideBarOp = ({ OperateurID }) => {
         `http://127.0.0.1:5000/operator/${operateurId}/usines`
       );
       setUsines(response.data);
-      console.log(usines, "piiiiiiiiiiiiiiiiw");
+      console.log(usines);
     } catch (error) {
       console.error("Error getting usines:", error);
     }
@@ -117,7 +117,7 @@ const SideBarOp = ({ OperateurID }) => {
             <HiInbox className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
             <span
               className="flex-1 ml-3 whitespace-nowrap "
-              onClick={() => navigate(`/admin-op/${OperateurID}/`)}
+              onClick={() => navigate(`/mod-op/${OperateurID}/`)}
             >
               Accueil
             </span>
@@ -159,7 +159,7 @@ const SideBarOp = ({ OperateurID }) => {
                                 className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                 onClick={() =>
                                   navigate(
-                                    `/admin-op/${OperateurID}/${unit.UnityID}/tableau`
+                                    `/mod-op/${OperateurID}/${unit.UnityID}/tableau`
                                   )
                                 }
                               >
@@ -198,16 +198,6 @@ const SideBarOp = ({ OperateurID }) => {
               </ul>
             </li>
 
-            <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-              <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-              <span
-                className="flex-1 ml-3 whitespace-nowrap "
-                onClick={() => navigate(`/admin-op/${OperateurID}/AjouterMod`)}
-              >
-                Modérateurs
-              </span>
-            </button>
-
             <li>
               <NavLink
                 to="/sign-in"
@@ -238,4 +228,4 @@ const SideBarOp = ({ OperateurID }) => {
   );
 };
 
-export default SideBarOp;
+export default SideBarModOp;

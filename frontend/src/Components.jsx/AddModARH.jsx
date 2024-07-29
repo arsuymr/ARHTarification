@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-export default function AddMod() {
+export default function AddModARH() {
   const { OperateurID } = useParams();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -13,7 +13,7 @@ export default function AddMod() {
     try {
       console.log(email, username, OperateurID);
       const response = await axios.post(
-        "http://127.0.0.1:5000/users/create_user",
+        "http://127.0.0.1:5000/users/create_userARH",
         {
           email: email,
           username: username,
