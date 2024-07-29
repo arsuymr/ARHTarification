@@ -3,35 +3,83 @@ from .db import get_db
 from .CalculControler import Tarif_liquefaction_separation
 Resultat_bp = Blueprint('resultat', __name__)
 
-@Resultat_bp.route("/Simulation", methods=["GET"])
-def Simulation():
-    # Récupérer les paramètres de la requête
-    NomParametre = request.args.get("NomParametre", None)
-    ValeurParam = request.args.get("ValeurParam", None)
-    AnneeActuelle = request.args.get('AnneeActuelle', None)
-    OperateurID = request.args.get('OperateurID', None)
+@Resultat_bp.route("get_param",methods=["GET"])
+def get_param():
 
-
-    # Connexion à la base de données
     conn = get_db()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(dictionary = True)
 
-    # Mise à jour des paramètres
-    query = """
-        UPDATE Parametres 
-        SET valeur = %s 
-        WHERE codeParam = %s
-    """
-    cursor.execute(query, (ValeurParam, NomParametre))
-    conn.commit()
+    get_params_query = "SELECT * FROM Parametres"
+    cursor.execute(get_params_query)
+    params = cursor.fetchall()
 
-    # Fermer la connexion
     cursor.close()
     conn.close()
+    return jsonify(params)
 
-    # Obtenir les résultats
-    result = Tarif_liquefaction_separation(OperateurID, AnneeActuelle)
-    return result
+@Resultat_bp.route("/Simulation", methods=["GET"])
+def Simulation():
+
+   try:
+        # Récupérer les paramètres de la requête
+        NomParametre = request.args.get("NomParametre", None)
+        ValeurParam = request.args.get("ValeurParam", None)
+        AnneeActuelle = request.args.get('AnneeActuelle', None)
+        OperateurID = request.args.get('OperateurID', None)
+        # Connexion à la base de données
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        if ([NomParametre , ValeurParam] is not None):    
+            query = """
+                UPDATE Parametres 
+                SET valeur = %s 
+                WHERE codeParam = %s
+            """
+            cursor.execute(query, (ValeurParam, NomParametre))
+            conn.commit()
+        
+        units_query = """
+            SELECT Unity.UnityID
+            FROM Unity
+            JOIN Usine ON Unity.UsineID = Usine.UsineID
+            JOIN Posseder ON Usine.UsineID = Posseder.UsineID
+            WHERE Posseder.OperateurID = %s AND Posseder.Activ = 1
+        """
+        cursor.execute(units_query, (OperateurID,))
+        units = cursor.fetchall()
+
+        if not units:
+            return jsonify({'message': 'No units found for the specified operator'}), 404
+
+        # Boucler sur chaque unité pour vérifier si elle est valide pour l'année actuelle
+        for unit in units:
+            UnityID = unit['UnityID']
+            
+            recent_cc_query = """
+                SELECT valide
+                FROM ControleCout
+                WHERE UnityID = %s AND AnneeActuelle = %s
+            """
+            cursor.execute(recent_cc_query, (UnityID, AnneeActuelle))
+            recent_cc_result = cursor.fetchone()
+
+            if not recent_cc_result or not recent_cc_result['valide']:
+                # Si une unité n'est pas valide, renvoyer un message d'erreur
+                cursor.close()
+                conn.close()
+                return jsonify({'message': f'Unit {UnityID} is not valid for the year {AnneeActuelle}'}), 400
+
+
+        # Fermer la connexion
+        cursor.close()
+        conn.close()
+
+        # Obtenir les résultats
+        result = Tarif_liquefaction_separation(OperateurID, AnneeActuelle)
+        return result
+
+   except Exception as e:
+    raise e
 
 
 @Resultat_bp.route("/ValiderSimulation", methods=["POST"])
@@ -182,3 +230,4 @@ def stats():
     conn.close()
 
     return jsonify(grouped_results)
+

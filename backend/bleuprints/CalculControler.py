@@ -8,20 +8,27 @@ import math
 
 
 
-@calcul_bp.route('/', methods=['POST'])
-def calculer ():
-
+@calcul_bp.route('/calculate_taux_utilisation', methods=['POST'])
+def calculate_taux_utilisation():
     data = request.json
-    CCID = data.get("CCID", None)
-    AnneeActuelle = data.get('AnneeActuelle', None)
-    UnityID = data.get('UnityID', None)
-    UsineID = data.get('UsineID', None)
-    OperateurID = data.get('OperateurID', None)
-    Type = data.get('Type', None)
-    param = data.get('param', None)
+    CCID = data.get('CCID')
+    AnneeActuelle = data.get('AnneeActuelle')
+    UnityID = data.get('UnityID')
+    OperateurID = data.get('OperateurID')
+    n = data.get('n')
 
-    result = Tarif_liquefaction_separation(OperateurID, AnneeActuelle)
-    return jsonify(result)  
+    conn = get_db()
+    cursor= conn.cursor(dictionary=True)
+    query="""
+    SELECT UsineID FROM Unity WHERE  UnityID = %s
+    """
+    cursor.execute(query, (UnityID,))
+    result = cursor.fetchone()
+    UsineID = result['UsineID']
+
+    taux_utilisation = calcul_Taux_Utilisation(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, n)
+
+    return jsonify(taux_utilisation), 200 
 
 
 
@@ -83,7 +90,7 @@ def Tarif_liquefaction_separation(OperateurID, AnneeActuelle):
 
                     if typ in ["liquefaction", "liquefaction et separation"]:
                         sum_quantite_GA_L += sum(QGA)
-                        creu = CREU_Unity(CCID, AnneeActuelle, unite, usineid, OperateurID, typ, 7)
+                        creu = CREU_Unity(CCID, AnneeActuelle, unite, usineid, OperateurID, typ, Nb_annee_prevision)
                         tarif_liquefaction += creu[0] * sum(QGA)
                         creu_results.append({
                             "NomUnity": NomUnity,
@@ -96,7 +103,7 @@ def Tarif_liquefaction_separation(OperateurID, AnneeActuelle):
 
                     if typ in ["separation", "liquefaction et separation"]:
                         sum_quantite_GA_S += sum(QGA)
-                        creu = CREU_Unity(CCID, AnneeActuelle, unite, usineid, OperateurID, typ, 7)
+                        creu = CREU_Unity(CCID, AnneeActuelle, unite, usineid, OperateurID, typ, Nb_annee_prevision)
                         tarif_separation += creu[1] * sum(QGA)
                         creu_results.append({
                             "NomUnity": NomUnity,
@@ -439,6 +446,7 @@ def calcul_Taux_Utilisation(CCID, AnneeActuelle, UnityID, UsineID, OperateurID,n
     conn.close()
     # Diviser chaque élément du tableau 'valeurs_autre' par le vecteur 'taux_utilisation'
     taux_utilisation = [ (valeurs_gnl[i]/1000 / Capacite_design *100) for i in range(n)]
+
 
     return taux_utilisation
 

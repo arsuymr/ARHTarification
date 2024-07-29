@@ -274,33 +274,50 @@ def delete_usine():
 
 @operator_bp.route("/GetUnitiesByOperator", methods=["POST"])
 def get_unities_by_operator():
-    OperateurNom = request.json.get('OperateurNom', None)
+    data = request.json
+    OperateurID = data.get('OperateurID', None)
+    OperateurNom = data.get('OperateurNom', None)
 
-    if not OperateurNom:
-        return jsonify({"error": "OperateurNom is required"}), 400
+    if not OperateurID and not OperateurNom:
+        return jsonify({"error": "Either OperateurID or OperateurNom is required"}), 400
 
     # Connexion à la base de données
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
 
-    # Construire la requête SQL
-    query = """
-        SELECT Unity.* 
-        FROM Unity 
-        WHERE UsineID IN (
-            SELECT Posseder.UsineID 
-            FROM Posseder 
-            JOIN Operateur ON Posseder.OperateurID = Operateur.OperateurID 
-            WHERE Operateur.Nom_operateur = %s
-        )
-    """
-    cursor.execute(query, (OperateurNom,))
+    if OperateurID:
+        # Requête pour chercher par OperateurID
+        query = """
+            SELECT Unity.* 
+            FROM Unity 
+            WHERE UsineID IN (
+                SELECT Posseder.UsineID 
+                FROM Posseder 
+                WHERE Posseder.OperateurID = %s
+            )
+        """
+        cursor.execute(query, (OperateurID,))
+    else:
+        # Requête pour chercher par Nom_operateur
+        query = """
+            SELECT Unity.* 
+            FROM Unity 
+            WHERE UsineID IN (
+                SELECT Posseder.UsineID 
+                FROM Posseder 
+                JOIN Operateur ON Posseder.OperateurID = Operateur.OperateurID 
+                WHERE Operateur.Nom_operateur = %s
+            )
+        """
+        cursor.execute(query, (OperateurNom,))
+
     results = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
     return jsonify(results)
+
 
 
 @operator_bp.route("/Get_all_operateur", methods=["GET"])

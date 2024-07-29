@@ -14,11 +14,12 @@ def get_classe():
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
         query = """
-        SELECT DISTINCT Classe.ID, Classe.NomClasse
-        FROM Classe
-        JOIN SousRebrique ON Classe.ID = SousRebrique.IDClasse
-        WHERE SousRebrique.calcule = 0;
-    """
+            SELECT DISTINCT Classe.ID, Classe.NomClasse
+            FROM Classe
+            JOIN SousRebrique ON Classe.ID = SousRebrique.IDClasse
+            WHERE SousRebrique.calcule = 0
+            ORDER BY Classe.ID
+        """
         cursor.execute(query)
         results = cursor.fetchall()
         return jsonify(results), 200
@@ -322,7 +323,7 @@ def get_CC():
         recent_cc_result = cursor.fetchone()
 
         if not recent_cc_result:
-            return jsonify({'message': 'No Controle cout control found'}), 404
+            return jsonify({'error': 'No Controle cout control found'}), 404
 
         current_year = int(AnneeActuelle)
         prevision_years = list(range(current_year, current_year + recent_cc_result['Prevision']))

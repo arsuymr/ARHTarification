@@ -1,8 +1,7 @@
 import React from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function TabDashboard() {
-    const { OperateurID, UnityID } = useParams();
 
     return (
         <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">

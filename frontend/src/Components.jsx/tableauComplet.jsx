@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Tableau from "../Components.jsx/tableau";
 import { useParams } from "react-router";
-import SideBarOp from "./sidebarOp";
+import SideBarOp from "./SideBarOp";
 import Tabs from "./tabs";
 import { Button, TextField } from "@mui/material";
+import ConfirmDialog from "./ConfirmDialog";
 
 export default function TableauComplet() {
 
@@ -15,6 +16,31 @@ export default function TableauComplet() {
     AnneeActuelle: "",
     Prevision: "",
   });
+
+  const [open, setOpen] = useState(false);
+  const [dialogInfo, setDialogInfo] = useState({ title: '', message: '', onConfirm: () => { } });
+
+  const handleOpen1 = () => {
+    setDialogInfo({
+      title: 'Creation Controle de Cout pour une nouvelle année',
+      message: "Veuillez vérifier attentivement vos entrées avant de continuer, Vos saisies seront archivées et ne pourront plus être modifiées.",
+      onConfirm: () => { createControleCout(); setOpen(false) }
+    })
+    setOpen(true);
+  };
+
+  const handleOpen2 = () => {
+    setDialogInfo({
+      title: 'Validation de Saisits',
+      message: "En confirmant, ces informations seront envoyées à l'administrateur d'ARH. Veuillez vérifier attentivement vos saisies avant de valider.",
+      onConfirm: () => { validateControleCout(); setOpen(false); }
+    })
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     const getClasses = async () => {
@@ -81,24 +107,29 @@ export default function TableauComplet() {
       <div className="flex flex-col">
         <Tabs />
         {!controleCout || controleCout.valide ? (
-          <div>
-            <h3>Créer un nouveau Controle de Coût</h3>
+          <div className="flex justify-center m-7">
+            <h3 className="w-full font-bold ">Créer un nouveau Controle de Coût</h3>
             <TextField
-              label="Année actuelle"
+              label="Année du Nouveau controle cout"
               value={newControl.AnneeActuelle}
               onChange={(e) => setNewControl({ ...newControl, AnneeActuelle: e.target.value })}
-              fullWidth
+              className="w-full "
             />
             <TextField
-              label="Nombre d'années (Prevision)"
+              label="Nombre d'années de Previsions"
               value={newControl.Prevision}
               onChange={(e) => setNewControl({ ...newControl, Prevision: e.target.value })}
               fullWidth
               type="number"
+              className=""
             />
-            <Button onClick={createControleCout} variant="contained" color="primary">
-              Créer Controle de Coût
-            </Button>
+            <div className="flex p-4 justify-items-center">
+              <button onClick={handleOpen1} className="rounded bg-indigo-600 px-4 py-2  font-medium text-white hover:bg-indigo-700 w-24" >
+                Créer
+              </button>
+            </div>
+
+
           </div>
         ) : null}
         {classes.map((classe) => (
@@ -114,13 +145,20 @@ export default function TableauComplet() {
         {controleCout && (
           <div>
             {!controleCout.valide && (
-              <Button onClick={() => validateControleCout(controleCout.CCID)} variant="contained" color="primary">
+              <Button onClick={handleOpen2} variant="contained" className="bg-indigo-600" >
                 Valider le Controle de Coût
               </Button>
             )}
           </div>
         )}
       </div>
+      <ConfirmDialog
+        open={open}
+        onClose={handleClose}
+        onConfirm={dialogInfo.onConfirm}
+        title={dialogInfo.title}
+        description={dialogInfo.message}
+      />
     </div>
   );
 };

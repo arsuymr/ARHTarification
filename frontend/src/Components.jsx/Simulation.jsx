@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Grid, Typography, Input, MenuItem, Select, FormControl, InputLabel, Button, TableCell, TableBody, TableRow, TableHead, TableContainer, Table, Paper } from '@mui/material';
-import Component from './sidebar';
 import TabDashboard from './TabDashboard';
+import ConfirmDialog from './ConfirmDialog';
 
 export default function SimulationPage() {
     const [paramNames, setParamNames] = useState([]);
@@ -15,6 +15,15 @@ export default function SimulationPage() {
     const [tarifL, setTarifL] = useState(0);
     const [resultData, setResultData] = useState({});
 
+    const [open, setOpen] = useState(false);
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     useEffect(() => {
         axios.get('http://127.0.0.1:5000/operator/Get_all_operateur')
@@ -84,11 +93,11 @@ export default function SimulationPage() {
                 })
                 .catch(error => console.error(`Error validating simulation for ${nomUnity}:`, error));
         });
+        setOpen(false)
     };
 
     return (
-        <div className='flex'>
-            <Component />
+        <div className=''>
             <Box sx={{ padding: 4, paddingTop: 2 }}  >
                 <TabDashboard />
                 <h4 variant="h4" className='text-xl mt-4  '>
@@ -122,6 +131,7 @@ export default function SimulationPage() {
                                             <Input
                                                 className='border-b border-blue-300'
                                                 type="number"
+                                                inputProps={{ min: "0", step: "0.1" }}
                                                 value={paramValues[index] || ''}
                                                 onChange={(e) => {
                                                     const newValues = [...paramValues];
@@ -192,12 +202,19 @@ export default function SimulationPage() {
                         </TableContainer>
                     </Grid>
                     <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
-                        <Button variant="contained" color="primary" onClick={handleParamSubmit}>
+                        <Button variant="contained" color="primary" onClick={handleOpen}>
                             Valider Simulation
                         </Button>
                     </Grid>
                 </Grid>
             </Box >
+            <ConfirmDialog
+                open={open}
+                onClose={handleClose}
+                onConfirm={handleParamSubmit}
+                title="Confirmation de Validation"
+                description="Si vous validez maintenant, vous ne pourrez plus simuler les données ultérieurement. Veuillez vous assurer que toutes les informations saisies sont correctes."
+            />
         </div>
     );
 }
