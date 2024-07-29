@@ -79,9 +79,8 @@ const SideBarARH = () => {
                   Unités
                 </span>
                 <HiChevronDown
-                  className={`w-6 h-6 transition-transform ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
+                  className={`w-6 h-6 transition-transform ${isOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
               <ul className={`${isOpen ? "block" : "hidden"} py-2 space-y-2`}>
@@ -99,32 +98,14 @@ const SideBarARH = () => {
                 to="/admin-arh/moderateurs"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                <HiTable className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                 <span className="flex-1 ml-3 whitespace-nowrap">
                   Modérateurs
                 </span>
               </Link>
             </li>
-            <li>
-              <a
-                href="google.com"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <HiInbox className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                <span className="flex-1 ml-3 whitespace-nowrap">Ecrits</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="google.com"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                <span className="flex-1 ml-3 whitespace-nowrap">
-                  Modérateurs
-                </span>
-              </a>
-            </li>
+
+
             <li>
               <a
                 href="google.com"

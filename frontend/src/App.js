@@ -44,7 +44,14 @@ function App() {
         />
         <Route path="/admin-arh/moderateurs" element={<GestionModARH />} />
         <Route path="/admin-op/:OperateurID/:UsineID" element={<Unites />} />
-        <Route path="/DashBoard/Graphical_visualisation" element={<Charts />} />
+        <Route
+          path="/admin-arh/DashBoard/Graphical_visualisation"
+          element={<Charts role="ADMIN" />}
+        />
+        <Route
+          path="/user-arh/DashBoard/Graphical_visualisation"
+          element={<Charts role="USER" />}
+        />
         <Route
           path="/DashBoard/Simulation_donnee"
           element={<SimulationPage />}
