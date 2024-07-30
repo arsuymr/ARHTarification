@@ -9,13 +9,28 @@ import Paper from "@mui/material/Paper";
 import axios from "axios";
 import { useParams } from "react-router";
 
-const Tableau = ({ IDClasse, CCID }) => {
+const Tableau = ({ IDClasse, CCID, onAllInputsFilledChange }) => {
   const { UnityID, OperateurID } = useParams();
   const [data, setData] = useState([]);
   const [nomsSR, setNomsSR] = useState([]);
   const [codeSRs, setCodeSRs] = useState([]);
   const [years, setYears] = useState([]);
 
+  const checkIfAllInputsFilled = () => {
+    for (let row of data) {
+      for (let cell of row) {
+        if (cell === "") {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  useEffect(() => {
+
+    onAllInputsFilledChange(checkIfAllInputsFilled());
+  }, [data, onAllInputsFilledChange]);
 
   const getSR = async (IDClasse) => {
     try {
@@ -29,22 +44,55 @@ const Tableau = ({ IDClasse, CCID }) => {
     }
   };
 
-  // Function to fetch all data for the provided IDClasse and initial years
-  const getALL = async (IDClasse, codeSRs) => {
+  const getALL = async (IDClasse) => {
     try {
-      console.log(UnityID, CCID)
-      const yearsResponse = await axios.get("http://127.0.0.1:5000/saisit/get_recent_CC", {
-        params: { UnityID: UnityID }, // Use the actual UnityID here
-      });
-      const years = yearsResponse.data.years; // Assurez-vous que `years` est un tableau
 
-      // Assurez-vous que `years` est bien un tableau
+      const responseCC = await axios.get("http://127.0.0.1:5000/saisit/get_recent_CC", {
+        params: { UnityID: UnityID },
+      });
+      const years = responseCC.data.years;
+
       if (!Array.isArray(years)) {
         throw new Error('Years data is not an array');
       }
-      setYears(years)
-      // Fetch all data for the provided IDClasse, codeSRs, and CCID
-      const promises = codeSRs.map((codeSR) =>
+      setYears(years);
+
+      // Fetch SR data
+      const responseSR = await new Promise((resolve, reject) => {
+        getSR(IDClasse).then(resolve).catch(reject);
+      });
+      const nomSRs = responseSR.map((item) => item.NomSR);
+      const codeSRs = responseSR.map((item) => item.codeSR);
+
+      // Filter codeSRs based on type when IDClasse is 4
+      let filteredCodeSRs = [];
+      let filteredNomSRs = [];
+
+      if (IDClasse === 4) {
+        const type = responseCC.data?.Type;
+
+        if (!type) {
+          throw new Error('Type is not defined in responseSR');
+        }
+
+        if (type === 'liquefaction') {
+          filteredCodeSRs = codeSRs.filter(sr => sr === 'GNL' || sr === 'GZL');
+        } else if (type === 'separation') {
+          filteredCodeSRs = codeSRs.filter(sr => sr === 'PRP' || sr === 'BTN');
+        }
+      } else {
+        filteredCodeSRs = codeSRs;
+      }
+
+      filteredNomSRs = filteredCodeSRs.map(codeSR => {
+        const index = codeSRs.indexOf(codeSR);
+        return index !== -1 ? nomSRs[index] : undefined;
+      }).filter(nom => nom !== undefined);
+
+      setCodeSRs(filteredCodeSRs);
+      setNomsSR(filteredNomSRs);
+
+      const promises = filteredCodeSRs.map((codeSR) =>
         Promise.all(
           years.map((year) =>
             axios
@@ -58,9 +106,9 @@ const Tableau = ({ IDClasse, CCID }) => {
                 },
               })
               .then((response) =>
-                response.data.data.length > 0 ? response.data.data[0].Valeur : "0.0"
+                response.data.data.length > 0 ? response.data.data[0].Valeur : ""
               )
-              .catch(() => "0.0")
+              .catch(() => "")
           )
         )
       );
@@ -69,21 +117,18 @@ const Tableau = ({ IDClasse, CCID }) => {
       return results;
     } catch (error) {
       console.error("Error fetching data:", error);
-      return Array(codeSRs.length).fill(Array(19).fill("0.0"));
+      return Array(codeSRs.length).fill(Array(19).fill(""));
     }
   };
+
+
 
   // Fetch NomSR and initial data for the provided IDClasse on component mount
   useEffect(() => {
     const fetchData = async () => {
       if (IDClasse) {
-        const response = await getSR(IDClasse);
-        const nomSRs = response.map((item) => item.NomSR);
-        const codeSRs = response.map((item) => item.codeSR);
-        setNomsSR(nomSRs);
-        setCodeSRs(codeSRs);
 
-        const initialInvestissements = await getALL(IDClasse, codeSRs);
+        const initialInvestissements = await getALL(IDClasse);
 
         // Update the data state with the fetched initial values
         setData(initialInvestissements);
@@ -198,6 +243,7 @@ const Tableau = ({ IDClasse, CCID }) => {
                         handleKeyPress(e, rowIndex, colIndex, e.target.value)
                       }
                       style={{ width: "60px", textAlign: "center" }}
+                      required
                     />
                   </TableCell>
                 ))}

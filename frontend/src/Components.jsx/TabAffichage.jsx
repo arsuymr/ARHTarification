@@ -66,7 +66,7 @@ const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator }
                     Promise.all(
                         years.map((year) =>
                             axios
-                                .get("http://127.0.0.1:5000/saisit/get_all", {
+                                .get("http://127.0.0.1:5000/saisit/get_all_valide", {
                                     params: {
                                         CCID: CCID,
                                         IDClasse: IDClasse,

@@ -61,16 +61,28 @@ function App() {
           element={<Unites role="ADMINOP" />}
         />
         <Route
-          path="/DashBoard/Graphical_visualisation"
+          path="/admin-arh/:UserID/DashBoard/Graphical_visualisation"
           element={<Charts role="ADMIN" />}
         />
         <Route
-          path="/DashBoard/Simulation_donnee"
+          path="/user-arh/:UserID/DashBoard/Graphical_visualisation"
+          element={<Charts role="USER" />}
+        />
+        <Route
+          path="admin-arh/:UserID/DashBoard/Simulation_donnee"
           element={<SimulationPage role="ADMIN" />}
         />
         <Route
-          path="/DashBoard/Historique"
+          path="user-arh/:UserID/DashBoard/Simulation_donnee"
+          element={<SimulationPage role="USER" />}
+        />
+        <Route
+          path="admin-arh/:UserID/DashBoard/Historique"
           element={<HistoriqueCC role="ADMIN" />}
+        />
+        <Route
+          path="user-arh/:UserID/DashBoard/Historique"
+          element={<HistoriqueCC role="USER" />}
         />
       </Routes>
     </Router>

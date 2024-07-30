@@ -150,6 +150,75 @@ def get_all():
         if conn:
             conn.close()
 
+@saisit_bp.route('/get_all_valide', methods=['GET'])
+def get_all_valide():
+    conn = None
+    try:
+        CCID = request.args.get('CCID', None)
+        IDClasse = request.args.get('IDClasse', None)
+        AnneePrevision = request.args.get('AnneePrevision', None)
+        UnityID = request.args.get('UnityID', None)
+        CodeSR = request.args.get('CodeSR', None)
+
+        # Vérification des paramètres obligatoires
+        if None in [IDClasse, AnneePrevision, UnityID, CodeSR, CCID]:
+            return jsonify({'error': 'All parameters are required'}), 400
+
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+
+        # Trouver UsineID à partir de UnityID
+        usine_query = """
+            SELECT UsineID
+            FROM Unity
+            WHERE UnityID = %s
+        """
+        cursor.execute(usine_query, (UnityID,))
+        usine_result = cursor.fetchone()
+        
+        if not usine_result:
+            return jsonify({'message': 'No usine found for the given UnityID'}), 404
+        
+        UsineID = usine_result['UsineID']
+
+        recent_cc_query = """
+                SELECT valide
+                FROM ControleCout
+                WHERE UnityID = %s AND AnneeActuelle = %s
+            """
+        cursor.execute(recent_cc_query, (UnityID, AnneeActuelle))
+        recent_cc_result = cursor.fetchone()
+        recent_cc_result = recent_cc_result["valide"]
+
+        if not recent_cc_result or not recent_cc_result['valide']:
+                # Si une unité n'est pas valide, renvoyer un message d'erreur
+                cursor.close()
+                conn.close()
+                return jsonify({'message': 'le Controle cout is not valid for the year {AnneeActuelle}'}), 400
+
+
+        # Récupérer toutes les saisies pour le contrôle de coût le plus récent avec UsineID
+        saisit_query = """
+            SELECT * FROM Saisit AS S WHERE S.CCID = %s
+              AND S.AnneePrevision = %s 
+              AND S.UnityID = %s 
+              AND S.IDClasse = %s 
+              AND S.CodeSR = %s
+              AND S.UsineID = %s
+        """
+
+        cursor.execute(saisit_query, (CCID, AnneePrevision, UnityID, IDClasse, CodeSR, UsineID))
+        results = cursor.fetchall()
+        if results:
+            return jsonify({ 'data': results}), 200
+        else:
+            return jsonify({'message': 'No data found for the most recent control'}), 200
+
+    except mysql.connector.Error as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
 
 
 @saisit_bp.route('/get_SR', methods=['GET'])
@@ -283,13 +352,23 @@ def get_recent_CC():
         current_year = recent_cc_result['AnneeActuelle']
         prevision_years = list(range(current_year, current_year + recent_cc_result['Prevision']))
 
+        units = """
+            SELECT typ
+            FROM Unity
+            WHERE UnityID = %s
+        """
+        cursor.execute(units, (UnityID,))
+        typ = cursor.fetchone()
+        typ =typ["typ"]
+
         # Inclure les années dans la réponse
         response = {
             'CCID': recent_cc_result['Id'],
             'AnneeActuelle': recent_cc_result['AnneeActuelle'],
             'Prevision': recent_cc_result['Prevision'],
             'valide': recent_cc_result['valide'],
-            'years': prevision_years
+            'years': prevision_years, 
+             "Type": typ
         }
 
         return jsonify(response), 200

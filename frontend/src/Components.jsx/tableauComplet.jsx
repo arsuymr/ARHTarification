@@ -19,7 +19,11 @@ export default function TableauComplet() {
 
   const [open, setOpen] = useState(false);
   const [dialogInfo, setDialogInfo] = useState({ title: '', message: '', onConfirm: () => { } });
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
+  const handleAllInputsFilledChange = (allInputsFilled) => {
+    setIsButtonDisabled(!allInputsFilled);
+  };
   const handleOpen1 = () => {
     setDialogInfo({
       title: 'Creation Controle de Cout pour une nouvelle année',
@@ -30,13 +34,22 @@ export default function TableauComplet() {
   };
 
   const handleOpen2 = () => {
-    setDialogInfo({
-      title: 'Validation de Saisits',
-      message: "En confirmant, ces informations seront envoyées à l'administrateur d'ARH. Veuillez vérifier attentivement vos saisies avant de valider.",
-      onConfirm: () => { validateControleCout(); setOpen(false); }
-    })
-    setOpen(true);
-  };
+    if (isButtonDisabled) {
+      setDialogInfo({
+        title: 'ATTENTION!!!',
+        message: "Vous n'avez pas fini votre saisit vous devez entrer tout donnees",
+        onConfirm: () => { setOpen(false); }
+      })
+    } else {
+      setDialogInfo({
+        title: 'Etes Vous sur de valider',
+        message: "En confirmant, ces informations seront envoyées à l'administrateur d'ARH. Veuillez vérifier attentivement vos saisies avant de valider.",
+        onConfirm: () => { validateControleCout(); setOpen(false); }
+      })
+    };
+    setOpen(true)
+  }
+
 
   const handleClose = () => {
     setOpen(false);
@@ -138,7 +151,7 @@ export default function TableauComplet() {
               {classe.NomClasse}
             </div>
             {classe && classe.ID && controleCout && controleCout.CCID && (
-              <Tableau IDClasse={classe.ID} CCID={controleCout.CCID} />
+              <Tableau IDClasse={classe.ID} CCID={controleCout.CCID} onAllInputsFilledChange={handleAllInputsFilledChange} />
             )}
           </div>
         ))}
