@@ -19,39 +19,45 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Account />} />
-        <Route path="/admin-op/:OperateurID" element={<AccueilOp />} />
-        <Route path="/admin-arh" element={<Charts role="ADMIN" />} />
-        <Route path="/admin-arh/:OperateurID" element={<DetailsOperator />} />
+        <Route path="/" element={<Auth />} />
+        <Route path="/admin-op/:UserID/:OperateurID" element={<AccueilOp />} />
+        <Route path="/admin-arh/:UserID/" element={<Charts role="ADMIN" />} />
         <Route
-          path="/admin-arh/:OperateurID/:UsineID"
+          path="/admin-arh/:UserID/:OperateurID"
+          element={<DetailsOperator />}
+        />
+        <Route
+          path="/admin-arh/:UserID/:OperateurID/:UsineID"
           element={<Unites role="ADMINARH" />}
         />
-        <Route path="/mod-arh" element={<AccueilModARH />} />
-        <Route path="/mod-op/:OperateurID" element={<AccueilModOp />} />
+        <Route path="/mod-arh/:UserID/" element={<AccueilModARH />} />
+        <Route path="/mod-op/:UserID/:OperateurID" element={<AccueilModOp />} />
         <Route
-          path="/admin-op/:OperateurID/:UnityID/tableau"
+          path="/admin-op/:UserID/:OperateurID/:UnityID/tableau"
           element={<TableauComplet />}
         />
         <Route
-          path="/mod-op/:OperateurID/:UnityID/tableau"
+          path="/mod-op/:UserID/:OperateurID/:UnityID/tableau"
           element={<TableauComplet />}
         />
         <Route
-          path="/admin-op/:OperateurID/:UnityID/parametres-op"
+          path="/admin-op/:UserID/:OperateurID/:UnityID/parametres-op"
           element={<ParamsTable />}
         />
         <Route
-          path="/mod-op/:OperateurID/:UnityID/parametres-op"
+          path="/mod-op/:UserID/:OperateurID/:UnityID/parametres-op"
           element={<ParamsTable />}
         />
         <Route
-          path="/admin-op/:OperateurID/AjouterMod"
+          path="/admin-op/:UserID/:OperateurID/AjouterMod"
           element={<GestionModOp />}
         />
-        <Route path="/admin-arh/moderateurs" element={<GestionModARH />} />
         <Route
-          path="/admin-op/:OperateurID/:UsineID"
+          path="/admin-arh/:UserID/moderateurs"
+          element={<GestionModARH />}
+        />
+        <Route
+          path="/admin-op/:UserID/:OperateurID/:UsineID"
           element={<Unites role="ADMINOP" />}
         />
         <Route
@@ -60,9 +66,12 @@ function App() {
         />
         <Route
           path="/DashBoard/Simulation_donnee"
-          element={<SimulationPage />}
+          element={<SimulationPage role="ADMIN" />}
         />
-        <Route path="/DashBoard/Historique" element={<HistoriqueCC />} />
+        <Route
+          path="/DashBoard/Historique"
+          element={<HistoriqueCC role="ADMIN" />}
+        />
       </Routes>
     </Router>
   );

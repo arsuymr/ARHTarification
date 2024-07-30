@@ -6,7 +6,7 @@ import SideBarARH from "../../Components.jsx/SideBarARH";
 import SideBarModARH from "../../Components.jsx/SideBarModARH";
 
 export default function AccueilModARH() {
-  const { OperateurID } = useParams();
+  const { OperateurID, UserID } = useParams();
   const [usines, setUsines] = useState([]);
   const navigate = useNavigate();
 
@@ -28,12 +28,12 @@ export default function AccueilModARH() {
   };
 
   const handleCardClick = (usineId) => {
-    navigate(`/admin-op/${OperateurID}/${usineId}`);
+    navigate(`/admin-op/${UserID}/${OperateurID}/${usineId}`);
   };
 
   return (
-    <div>
-      <SideBarModARH />
+    <div className="flex">
+      <SideBarARH Role="USER" />
       <div className="flex flex-wrap gap-7 p-6">
         {usines.length > 0 ? (
           usines.map((usine) => (

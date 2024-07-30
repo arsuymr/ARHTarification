@@ -5,7 +5,7 @@ import Card from "../../Components.jsx/carte";
 import SideBarOp from "../../Components.jsx/SideBarOp";
 
 export default function AccueilOp() {
-  const { OperateurID } = useParams();
+  const { OperateurID, UserID } = useParams();
   const [usines, setUsines] = useState([]);
   const navigate = useNavigate();
 
@@ -27,12 +27,12 @@ export default function AccueilOp() {
   };
 
   const handleCardClick = (usineId) => {
-    navigate(`/admin-op/${OperateurID}/${usineId}`);
+    navigate(`/admin-op/${UserID}/${OperateurID}/${usineId}`);
   };
 
   return (
     <div className="flex flex-wrap gap-7 p-6">
-      <SideBarOp OperateurID={OperateurID} />
+      <SideBarOp OperateurID={OperateurID} Role="ADMIN" />
       {usines.length > 0 ? (
         usines.map((usine) => (
           <Card

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useParams, Link } from "react-router-dom";
 import axios from "axios";
 import logo_arh from "../assets/logo_arh.svg";
 import {
@@ -14,7 +14,8 @@ import Modal from "./Modal"; // Import the Modal component
 import AddUsine from "./ajoutUsine";
 import AqUsine from "./aqUsine";
 
-const SideBarOp = ({ OperateurID }) => {
+const SideBarOp = ({ Role }) => {
+  const { OperateurID, UserID } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const [usines, setUsines] = useState([]);
   const [units, setUnits] = useState([]);
@@ -23,16 +24,17 @@ const SideBarOp = ({ OperateurID }) => {
   const [showAqUsine, setShowAqUsine] = useState(false);
   const [showAddUnity, setShowAddUnity] = useState(false);
   const [currentUsineId, setCurrentUsineId] = useState(null);
+  const [user, setUser] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
     getUsines(OperateurID);
-    // Fetch usines when component mounts or OperateurID changes
-  }, [OperateurID]);
+    getUser(UserID);
+  }, [OperateurID, UserID]);
 
   useEffect(() => {
     if (selectedUsine) {
-      getUnits(selectedUsine.UsineID); // Fetch units when a new usine is selected
+      getUnits(selectedUsine.UsineID);
     }
   }, [selectedUsine]);
 
@@ -58,13 +60,23 @@ const SideBarOp = ({ OperateurID }) => {
     }
   };
 
+  const getUser = async () => {
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:5000/users/get_user`,
+        { UserID: UserID }
+      );
+      setUser(response.data);
+    } catch (error) {
+      console.error("Error getting user:", error);
+    }
+  };
+
   const handleUsineClick = (usine) => {
     if (selectedUsine && selectedUsine.UsineID === usine.UsineID) {
-      // Deselect usine if clicking on the already selected one
       setSelectedUsine(null);
       setUnits([]);
     } else {
-      // Select new usine and fetch its units
       setSelectedUsine(usine);
       getUnits(usine.UsineID);
     }
@@ -80,12 +92,12 @@ const SideBarOp = ({ OperateurID }) => {
 
   const handleAddUsineSuccess = () => {
     setShowAddUsine(false);
-    getUsines(OperateurID); // Refresh the list of usines
+    getUsines(OperateurID);
   };
 
   const handleAqUsineSuccess = () => {
     setShowAqUsine(false);
-    getUsines(OperateurID); // Refresh the list of usines
+    getUsines(OperateurID);
   };
 
   const handleAjouterUnity = (usineId) => {
@@ -96,7 +108,7 @@ const SideBarOp = ({ OperateurID }) => {
   const handleAddUnitySuccess = () => {
     setShowAddUnity(false);
     if (selectedUsine) {
-      getUnits(selectedUsine.UsineID); // Refresh the list of units
+      getUnits(selectedUsine.UsineID);
     }
   };
 
@@ -109,14 +121,14 @@ const SideBarOp = ({ OperateurID }) => {
               src={logo_arh}
               alt="Logo ARH"
               className="w-40 h-40"
-              onClick={() => getUsines(OperateurID)} // Fetch usines on logo click
+              onClick={() => getUsines(OperateurID)}
             />
           </div>
           <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
             <HiInbox className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
             <span
               className="flex-1 ml-3 whitespace-nowrap "
-              onClick={() => navigate(`/admin-op/${OperateurID}/`)}
+              onClick={() => navigate(`/admin-op/${UserID}/${OperateurID}/`)}
             >
               Accueil
             </span>
@@ -158,7 +170,7 @@ const SideBarOp = ({ OperateurID }) => {
                                 className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                                 onClick={() =>
                                   navigate(
-                                    `/admin-op/${OperateurID}/${unit.UnityID}/tableau`
+                                    `/admin-op/${UserID}/${OperateurID}/${unit.UnityID}/tableau`
                                   )
                                 }
                               >
@@ -197,15 +209,21 @@ const SideBarOp = ({ OperateurID }) => {
               </ul>
             </li>
 
-            <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-              <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-              <span
-                className="flex-1 ml-3 whitespace-nowrap "
-                onClick={() => navigate(`/admin-op/${OperateurID}/AjouterMod`)}
-              >
-                Modérateurs
-              </span>
-            </button>
+            {Role === "ADMIN" && (
+              <li>
+                <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                  <span
+                    className="flex-1 ml-3 whitespace-nowrap "
+                    onClick={() =>
+                      navigate(`/admin-op/${UserID}/${OperateurID}/AjouterMod`)
+                    }
+                  >
+                    Modérateurs
+                  </span>
+                </button>
+              </li>
+            )}
 
             <li>
               <NavLink
@@ -219,6 +237,16 @@ const SideBarOp = ({ OperateurID }) => {
               </NavLink>
             </li>
           </ul>
+        </div>
+        <div className="absolute bottom-0 w-full p-4 text-center text-gray-900 dark:text-white">
+          <div className="mt-60">
+            <div className="flex-1 ml-3 whitespace-nowrap">
+              Connected as {user.username}
+            </div>
+            <div className="flex-1 ml-3 whitespace-nowrap font-bold">
+              <Link to={`/change-password/${UserID}`}>Change Password</Link>
+            </div>
+          </div>
         </div>
       </aside>
 

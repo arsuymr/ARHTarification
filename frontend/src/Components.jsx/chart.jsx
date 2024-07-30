@@ -112,10 +112,10 @@ export default function Charts({ role }) {
                 Value: "${params[1].value} 'DA'"
             </div>`;
   };
-  console.log(role)
+  console.log(role);
   return (
     <div className="flex">
-      {role === "ADMIN" ? <SideBarARH /> : <SideBarModARH />}
+      <SideBarARH Role={role} />
       <div className="m-2 w-[2560px]  ">
         <div className="p-4 pt-2">
           <TabDashboard />

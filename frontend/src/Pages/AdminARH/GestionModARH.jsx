@@ -5,7 +5,7 @@ import ModARH from "../../Components.jsx/ModARH";
 export default function GestionModARH() {
   return (
     <div className="flex">
-      <SideBarARH />
+      <SideBarARH Role="ADMIN" />
       <ModARH />
     </div>
   );

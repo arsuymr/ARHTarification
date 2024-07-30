@@ -1,12 +1,13 @@
 import React from "react";
-import SideBarModOp from "../../Components.jsx/SideBarModOp";
+
 import { useParams } from "react-router";
+import SideBarOp from "../../Components.jsx/SideBarOp";
 
 const AccueilModOp = () => {
   const { OperateurID } = useParams();
   return (
     <div>
-      <SideBarModOp OperateurID={OperateurID} />
+      <SideBarOp OperateurID={OperateurID} Role="USER" />
     </div>
   );
 };

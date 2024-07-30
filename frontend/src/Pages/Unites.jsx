@@ -30,9 +30,9 @@ export default function Unites({ role }) {
   return (
     <div className="flex">
       {role === "ADMINARH" ? (
-        <SideBarARH />
+        <SideBarARH Role="ADMIN" />
       ) : (
-        <SideBarOp OperateurID={OperateurID} />
+        <SideBarOp OperateurID={OperateurID} Role="ADMIN" />
       )}
       <div className="flex  gap-7 p-6">
         {usines.length > 0 ? (

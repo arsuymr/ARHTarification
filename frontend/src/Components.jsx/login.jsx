@@ -16,16 +16,16 @@ export default function Login() {
         email: email,
         pas: password,
       });
-      const { rol, OperateurID } = response.data;
+      const { rol, OperateurID, UserID } = response.data;
       console.log("piw", rol);
       if (rol === "admin" && OperateurID) {
-        navigate(`/admin-op/${OperateurID}`);
+        navigate(`/admin-op/${UserID}/${OperateurID}`);
       } else if (rol === "admin") {
-        navigate("/admin-arh");
+        navigate(`/admin-arh/${UserID}`);
       } else if (rol === "moderator" && OperateurID) {
-        navigate(`/mod-op/${OperateurID}`);
+        navigate(`/mod-op/${UserID}/${OperateurID}`);
       } else if (rol === "moderator") {
-        navigate("/mod-arh");
+        navigate(`/mod-arh/${UserID}`);
       } else {
         console.log("Role not recognized or missing OperateurID");
         setError("Role not recognized or missing OperateurID");

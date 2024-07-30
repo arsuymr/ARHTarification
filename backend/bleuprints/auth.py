@@ -42,14 +42,15 @@ def login():
     if not user or not check_password_hash(user['pas'], pas):  # Ensure 'pas' is the correct column
         return jsonify({"error": "Invalid email or password"}), 401
     
-    session['user_id'] = user['Username']
+    session['user_id'] = user['UserID']
     session['role'] = user['rol']
     session['operator_id'] = user['OperateurID']
     
     return jsonify({
         "message": "Login successful",
         "rol": user['rol'],
-        "OperateurID": user['OperateurID']
+        "OperateurID": user['OperateurID'],
+        "UserID": user['UserID']
     }), 200
 
 
@@ -303,3 +304,38 @@ def delete_account():
         if conn:
             conn.close()
     return jsonify({"message": "Accounts deleted successfully"}), 200
+
+@users_bp.route('/get_user', methods=['POST'])
+def get_user():
+    data = request.get_json()
+    UserID = data.get('UserID')
+    conn = None
+    cursor = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        query = 'SELECT Username, Email FROM users WHERE UserID=%s'
+        cursor.execute(query, (UserID,))
+        result = cursor.fetchone()  # Assuming UserID is unique and only one record will be returned
+        conn.commit()
+        if result:
+            user = {
+                "username": result[0],
+                "email": result[1],
+            }
+        else:
+            user = None
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    if user:
+        return jsonify(user), 200
+    else:
+        return jsonify({"error": "User not found"}), 404

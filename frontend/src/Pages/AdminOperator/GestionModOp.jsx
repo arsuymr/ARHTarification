@@ -9,7 +9,7 @@ export default function GestionModOp() {
   const { OperateurID } = useParams();
   return (
     <div className="flex">
-      <SideBarOp OperateurID={OperateurID} />
+      <SideBarOp OperateurID={OperateurID} Role="ADMIN" />
 
       <Mod />
     </div>

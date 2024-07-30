@@ -6,7 +6,7 @@ import SideBarOp from "../../Components.jsx/SideBarOp";
 import SideBarARH from "../../Components.jsx/SideBarARH";
 
 export default function DetailsOperator() {
-  const { OperateurID } = useParams();
+  const { OperateurID, UserID } = useParams();
   const [usines, setUsines] = useState([]);
   const navigate = useNavigate();
 
@@ -28,12 +28,12 @@ export default function DetailsOperator() {
   };
 
   const handleCardClick = (usineId) => {
-    navigate(`/admin-arh/${OperateurID}/${usineId}`);
+    navigate(`/admin-arh/${UserID}/${OperateurID}/${usineId}`);
   };
 
   return (
     <div className="flex flex-wrap gap-7 p-6">
-      <SideBarARH />
+      <SideBarARH Role="ADMIN" />
       {usines.length > 0 ? (
         usines.map((usine) => (
           <Card

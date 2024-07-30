@@ -5,7 +5,7 @@ import Card from "../../Components.jsx/carte";
 import SideBarARH from "../../Components.jsx/SideBarARH";
 import Charts from "../../Components.jsx/chart";
 export default function AccueilARH() {
-  const { OperateurID } = useParams();
+  const { OperateurID, UserID } = useParams();
   const [usines, setUsines] = useState([]);
   const navigate = useNavigate();
 
@@ -27,12 +27,12 @@ export default function AccueilARH() {
   };
 
   const handleCardClick = (usineId) => {
-    navigate(`/admin-op/${OperateurID}/${usineId}`);
+    navigate(`/admin-arh/${UserID}/${OperateurID}/${usineId}`);
   };
 
   return (
     <div>
-      <Charts />
+      <Charts role="ADMIN" />
     </div>
   );
 }

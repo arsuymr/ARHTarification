@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import logo_arh from "../assets/logo_arh.svg";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Modal from "./Modal";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,15 +15,18 @@ import {
 } from "react-icons/hi";
 import AddOperator from "./AddOperator";
 
-const SideBarARH = () => {
+const SideBarARH = ({ Role }) => {
+  const { UserID } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const [operators, setOperators] = useState([]);
+  const [user, setUser] = useState({});
   const [showAddOperator, setShowAddOperator] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    getOperators(); // Replace with the appropriate operateurId
-  }, []);
+    getOperators();
+    getUser();
+  }, [UserID]);
 
   const getOperators = async () => {
     try {
@@ -31,9 +34,21 @@ const SideBarARH = () => {
         `http://127.0.0.1:5000/operator/Get_all_operateur`
       );
       setOperators(response.data);
-      console.log("unites");
     } catch (error) {
-      console.error("Error getting usines:", error);
+      console.error("Error getting operators:", error);
+    }
+  };
+
+  const getUser = async () => {
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:5000/users/get_user`,
+        { UserID }
+      );
+
+      setUser(response.data);
+    } catch (error) {
+      console.error("Error getting user:", error);
     }
   };
 
@@ -55,18 +70,18 @@ const SideBarARH = () => {
               src={logo_arh}
               alt="Logo ARH"
               className="w-40 h-40"
-              onClick={() => getOperators()} // Replace with appropriate operateurId
+              onClick={() => getOperators()}
             />
           </div>
           <ul className="space-y-2">
             <li>
-              <a
-                href="/admin-arh"
+              <Link
+                to={`/admin-arh/${UserID}`}
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <HiChartPie className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                 <span className="ml-3">Dashboard</span>
-              </a>
+              </Link>
             </li>
             <li>
               <button
@@ -85,42 +100,44 @@ const SideBarARH = () => {
                 />
               </button>
               <ul className={`${isOpen ? "block" : "hidden"} py-2 space-y-2`}>
-                {operators.map((usine) => (
-                  <li key={usine.OperateurID}>
+                {operators.map((operator) => (
+                  <li key={operator.OperateurID}>
                     <button
                       className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 pl-11"
                       onClick={() =>
-                        navigate(`/admin-arh/${usine.OperateurID}`)
+                        navigate(`/admin-arh/${UserID}/${operator.OperateurID}`)
                       }
                     >
-                      {usine.Nom_operateur}
+                      {operator.Nom_operateur}
                     </button>
                   </li>
                 ))}
                 <li>
                   <button
                     className="flex items-center w-full p-2 text-base font-semibold text-[#21466F] transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 pl-11"
-                    onClick={() => handleAddOperator()}
+                    onClick={handleAddOperator}
                   >
                     Ajouter opérateur
                   </button>
                 </li>
               </ul>
             </li>
-            <li>
-              <Link
-                to="/admin-arh/moderateurs"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                <span className="flex-1 ml-3 whitespace-nowrap">
-                  Modérateurs
-                </span>
-              </Link>
-            </li>
+            {Role === "ADMIN" && (
+              <li>
+                <Link
+                  to={`/admin-arh/${UserID}/moderateurs`}
+                  className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                  <span className="flex-1 ml-3 whitespace-nowrap">
+                    Modérateurs
+                  </span>
+                </Link>
+              </li>
+            )}
             <li>
               <a
-                href="google.com"
+                href="https://google.com"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <HiArrowSmRight className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
@@ -130,6 +147,15 @@ const SideBarARH = () => {
               </a>
             </li>
           </ul>
+
+          <div className="mt-60">
+            <div className="flex-1 ml-3 whitespace-nowrap">
+              Connected as {user.username}
+            </div>
+            <div className="flex-1 ml-3 whitespace-nowrap font-bold">
+              <Link to={`/change-password/${UserID}`}>Change Password</Link>
+            </div>
+          </div>
         </div>
       </aside>
       <Modal show={showAddOperator} onClose={() => setShowAddOperator(false)}>
