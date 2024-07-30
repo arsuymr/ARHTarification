@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { LineChart } from "@mui/x-charts/LineChart";
-import SideBarARH from "./SideBarARH";
 import TabDashboard from "./TabDashboard";
+import SideBarARH from "./SideBarARH";
+import SideBarModARH from "./SideBarModARH";
 
-export default function Charts() {
+export default function Charts({ role }) {
   const [xLabels, setXLabels] = useState([]);
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
@@ -111,10 +112,10 @@ export default function Charts() {
                 Value: "${params[1].value} 'DA'"
             </div>`;
   };
-
+  console.log(role)
   return (
     <div className="flex">
-      <SideBarARH />
+      {role === "ADMIN" ? <SideBarARH /> : <SideBarModARH />}
       <div className="m-2 w-[2560px]  ">
         <div className="p-4 pt-2">
           <TabDashboard />
