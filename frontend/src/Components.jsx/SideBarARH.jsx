@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import logo_arh from "../assets/logo_arh.svg";
 import { Link } from "react-router-dom";
+import Modal from "./Modal";
+import { useNavigate } from "react-router-dom";
 import {
   HiArrowSmRight,
   HiChartPie,
@@ -11,39 +13,37 @@ import {
   HiUser,
   HiChevronDown,
 } from "react-icons/hi";
+import AddOperator from "./AddOperator";
 
 const SideBarARH = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [usines, setUsines] = useState([]);
-  const [selectedUsine, setSelectedUsine] = useState(null);
-  const [units, setUnits] = useState([]);
+  const [operators, setOperators] = useState([]);
+  const [showAddOperator, setShowAddOperator] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    getUsines(1); // Replace with the appropriate operateurId
+    getOperators(); // Replace with the appropriate operateurId
   }, []);
 
-  const getUsines = async (operateurId) => {
+  const getOperators = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:5000/operator/${operateurId}`
+        `http://127.0.0.1:5000/operator/Get_all_operateur`
       );
-      setUsines(response.data);
+      setOperators(response.data);
       console.log("unites");
     } catch (error) {
       console.error("Error getting usines:", error);
     }
   };
 
-  const getUnits = async (usineId) => {
-    try {
-      const response = await axios.get(
-        `http://127.0.0.1:5000/operator/${usineId}/unity`
-      );
-      setUnits(response.data);
-      console.log(response.data);
-    } catch (error) {
-      console.error("Error getting units:", error);
-    }
+  const handleAddOperator = () => {
+    setShowAddOperator(true);
+  };
+
+  const handleAddOperatorSuccess = () => {
+    setShowAddOperator(false);
+    getOperators();
   };
 
   return (
@@ -55,13 +55,13 @@ const SideBarARH = () => {
               src={logo_arh}
               alt="Logo ARH"
               className="w-40 h-40"
-              onClick={() => getUsines(1)} // Replace with appropriate operateurId
+              onClick={() => getOperators()} // Replace with appropriate operateurId
             />
           </div>
           <ul className="space-y-2">
             <li>
               <a
-                href="google.com"
+                href="/admin-arh"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <HiChartPie className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
@@ -76,21 +76,35 @@ const SideBarARH = () => {
               >
                 <HiShoppingBag className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                 <span className="flex-1 ml-3 text-left whitespace-nowrap">
-                  Unités
+                  Opérateurs
                 </span>
                 <HiChevronDown
-                  className={`w-6 h-6 transition-transform ${isOpen ? "rotate-180" : ""
-                    }`}
+                  className={`w-6 h-6 transition-transform ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
                 />
               </button>
               <ul className={`${isOpen ? "block" : "hidden"} py-2 space-y-2`}>
-                {usines.map((usine) => (
-                  <li key={usine.usineID}>
-                    <button className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 pl-11">
-                      {usine.NomUnity}
+                {operators.map((usine) => (
+                  <li key={usine.OperateurID}>
+                    <button
+                      className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 pl-11"
+                      onClick={() =>
+                        navigate(`/admin-arh/${usine.OperateurID}`)
+                      }
+                    >
+                      {usine.Nom_operateur}
                     </button>
                   </li>
                 ))}
+                <li>
+                  <button
+                    className="flex items-center w-full p-2 text-base font-semibold text-[#21466F] transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 pl-11"
+                    onClick={() => handleAddOperator()}
+                  >
+                    Ajouter opérateur
+                  </button>
+                </li>
               </ul>
             </li>
             <li>
@@ -104,29 +118,23 @@ const SideBarARH = () => {
                 </span>
               </Link>
             </li>
-
-
             <li>
               <a
                 href="google.com"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <HiArrowSmRight className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                <span className="flex-1 ml-3 whitespace-nowrap">Sign In</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="google.com"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <HiArrowSmRight className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                <span className="flex-1 ml-3 whitespace-nowrap">Sign Up</span>
+                <span className="flex-1 ml-3 whitespace-nowrap">
+                  Se déconnecter
+                </span>
               </a>
             </li>
           </ul>
         </div>
       </aside>
+      <Modal show={showAddOperator} onClose={() => setShowAddOperator(false)}>
+        <AddOperator onSuccess={handleAddOperatorSuccess} />
+      </Modal>
     </div>
   );
 };

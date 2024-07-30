@@ -13,13 +13,20 @@ import AccueilOp from "./Pages/AdminOperator/AccueilOperator";
 import AccueilModOp from "./Pages/ModeratorOperator/AccueilModOp";
 import GestionModARH from "./Pages/AdminARH/GestionModARH";
 import GestionModOp from "./Pages/AdminOperator/GestionModOp";
+import DetailsOperator from "./Pages/AdminARH/DetailsOperator";
+import Account from "./Components.jsx/Account";
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Auth />} />
+        <Route path="/" element={<Account />} />
         <Route path="/admin-op/:OperateurID" element={<AccueilOp />} />
-        <Route path="/admin-arh" element={<AccueilARH />} />
+        <Route path="/admin-arh" element={<Charts role="ADMIN" />} />
+        <Route path="/admin-arh/:OperateurID" element={<DetailsOperator />} />
+        <Route
+          path="/admin-arh/:OperateurID/:UsineID"
+          element={<Unites role="ADMINARH" />}
+        />
         <Route path="/mod-arh" element={<AccueilModARH />} />
         <Route path="/mod-op/:OperateurID" element={<AccueilModOp />} />
         <Route
@@ -43,14 +50,13 @@ function App() {
           element={<GestionModOp />}
         />
         <Route path="/admin-arh/moderateurs" element={<GestionModARH />} />
-        <Route path="/admin-op/:OperateurID/:UsineID" element={<Unites />} />
         <Route
-          path="/admin-arh/DashBoard/Graphical_visualisation"
-          element={<Charts role="ADMIN" />}
+          path="/admin-op/:OperateurID/:UsineID"
+          element={<Unites role="ADMINOP" />}
         />
         <Route
-          path="/user-arh/DashBoard/Graphical_visualisation"
-          element={<Charts role="USER" />}
+          path="/DashBoard/Graphical_visualisation"
+          element={<Charts role="ADMIN" />}
         />
         <Route
           path="/DashBoard/Simulation_donnee"

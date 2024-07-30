@@ -10,8 +10,8 @@ export default function GestionModOp() {
   return (
     <div className="flex">
       <SideBarOp OperateurID={OperateurID} />
+
       <Mod />
-      <AddMod />
     </div>
   );
 }

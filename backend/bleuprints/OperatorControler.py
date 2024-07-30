@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from .db import get_db
+from werkzeug.security import check_password_hash, generate_password_hash
 
 operator_bp = Blueprint('operator', __name__)
 
@@ -111,7 +112,7 @@ def unit(usine_id):
     try:
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
-        query = '''SELECT NomUnity, UnityID FROM Unity WHERE UsineID = %s;'''
+        query = '''SELECT NomUnity, UnityID,typ FROM Unity WHERE UsineID = %s;'''
         cursor.execute(query, (usine_id,))
         results = cursor.fetchall()
         return jsonify(results), 200
@@ -219,17 +220,31 @@ def get_inactive_usines():
 def acquisition_usine():
     data = request.get_json()
     UsineID = data.get('UsineID')
-    OperateurID = data.get('OperateurID')  # Make sure to include OperateurID in the request data
+    OperateurID = data.get('OperateurID')
+    
+    if not UsineID or not OperateurID:
+        return jsonify({"error": "UsineID and OperateurID are required"}), 400
+
     conn = None
     try:
         conn = get_db()
         cursor = conn.cursor()
         
-        # Insert into usine table
-        query = 'INSERT INTO Posseder (UsineID, OperateurID) VALUES (%s, %s)'
-        cursor.execute(query, (UsineID, OperateurID))
-        conn.commit()
+        # Check if the pair already exists
+        query_check = 'SELECT * FROM Posseder WHERE UsineID = %s AND OperateurID = %s'
+        cursor.execute(query_check, (UsineID, OperateurID))
+        result = cursor.fetchone()
         
+        if result:
+            # Update `active` to 1 if found
+            query_update = 'UPDATE Posseder SET activ = 1 WHERE UsineID = %s AND OperateurID = %s'
+            cursor.execute(query_update, (UsineID, OperateurID))
+        else:
+            # Insert into Posseder table
+            query_insert = 'INSERT INTO Posseder (UsineID, OperateurID, activ) VALUES (%s, %s, 1)'
+            cursor.execute(query_insert, (UsineID, OperateurID))
+        
+        conn.commit()
     
     except Exception as e:
         if conn:
@@ -337,3 +352,41 @@ def get_all_operateur():
     conn.close()
 
     return jsonify(results)
+
+@operator_bp.route("/addOperator", methods=["POST"])
+def addOperator():
+    data = request.get_json()
+    NomOperator = data.get('Nom_operateur', None)
+    Email = data.get('Email', None)
+    Username = data.get('Username', None)
+    password = generate_password_hash("Yusra")
+    
+    if not NomOperator or not Email or not Username:
+        return jsonify({"error": "NomOperator, email, and username are required"}), 400
+
+    conn = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # Insert into operateur table
+        query = 'INSERT INTO operateur (Nom_operateur) VALUES (%s);'
+        cursor.execute(query, (NomOperator,))
+        conn.commit()
+        
+        OperateurID = cursor.lastrowid
+        
+        # Insert into users table
+        query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s, %s, %s)'
+        cursor.execute(query, (Username, Email, password, "admin", OperateurID))
+        conn.commit()
+    
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+    return jsonify({"message": "Operator created successfully"}), 201

@@ -1,8 +1,25 @@
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session,current_app
 from .db import get_db
+import logging
+from flask_mail import  Message
+import secrets
 
 users_bp = Blueprint('users', __name__)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+
+
+def send_welcome_email(mod):
+    subject = "Bienvenue en tant que modérateur"
+    body = f"\n\nBonjour {mod.name},\n\nVotre compte de modérateur a été créé avec succès.\nVotre EMAIL : {mod.email}\nVotre Password : {mod.password}\nCordialement,\nVotre application Paper"
+
+    msg = Message(subject=subject, sender='aminatinhineneouadi@gmail.com', recipients=[mod.email], body=body)
+
+    mail = current_app.extensions['mail']
+    mail.send(msg)
 
 @users_bp.route('/login', methods=['POST'])
 def login():
@@ -79,7 +96,7 @@ def create_userARH():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        query = 'INSERT INTO users (username, email, pas, rol) VALUES (%s, %s, %s,"moderator", %s)'
+        query = 'INSERT INTO users (username, email, rol, pas) VALUES (%s, %s,"moderator", %s)'
         cursor.execute(query, (username, email, password))
         conn.commit()
     except Exception as e:
@@ -120,7 +137,7 @@ def get_mod():
     moderators = []
     for result in results:
         moderator = {
-            "status_color": "green" if result[0] == 1 else "red",
+            "status_color": "green" if result[0] == "1" else "red",
             "username": result[1],
             "email": result[2]
         }
@@ -129,15 +146,14 @@ def get_mod():
     return jsonify(moderators), 200
 
 
-@users_bp.route('/get_modARH', methods=['POST'])
+@users_bp.route('/get_modARH', methods=['GET'])
 def get_modARH():
-    data = request.get_json()
     conn = None
     cursor = None
     try:
         conn = get_db()
         cursor = conn.cursor()
-        query = 'SELECT statut, username, email FROM users WHERE OperateurID=NUMM AND rol="moderator"'
+        query = "SELECT statut, username, email FROM users WHERE users.OperateurID IS NULL AND users.rol = 'moderator';"
         cursor.execute(query)
         results = cursor.fetchall()
         conn.commit()
@@ -154,14 +170,17 @@ def get_modARH():
     # Transforming the results to a list of dictionaries
     moderators = []
     for result in results:
+        statut = result[0]
+        status_color = "red" if statut == "0" else "green"
         moderator = {
-            "status_color": "green" if result[0] == 1 else "red",
+            "status_color": status_color,
             "username": result[1],
             "email": result[2]
         }
         moderators.append(moderator)
 
     return jsonify(moderators), 200
+
 
 
 
@@ -212,3 +231,75 @@ def create_adminOp():
             conn.close()
 
     return jsonify({"message": "Admin Operateur crée avec succès"}), 201
+
+@users_bp.route('/activate_account', methods=['POST'])
+def activate_account():
+    data = request.get_json()
+    emails = data.get('emails')
+    logger.info(f"Activating accounts for emails: {emails}")
+    conn = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        # Generate a placeholder string for each email
+        placeholders = ', '.join(['%s'] * len(emails))
+        query = f'UPDATE users SET statut = 1 WHERE email IN ({placeholders})'
+        cursor.execute(query, tuple(emails))
+        conn.commit()
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        logger.error(f"Error activating accounts: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+    return jsonify({"message": "Accounts activated successfully"}), 200
+
+@users_bp.route('/deactivate_account', methods=['POST'])
+def deactivate_account():
+    data = request.get_json()
+    emails = data.get('emails')
+    logger.info(f"Deactivating accounts for emails: {emails}")
+    conn = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        # Generate a placeholder string for each email
+        placeholders = ', '.join(['%s'] * len(emails))
+        query = f'UPDATE users SET statut = 0 WHERE email IN ({placeholders})'
+        cursor.execute(query, tuple(emails))
+        conn.commit()
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        logger.error(f"Error deactivating accounts: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+    return jsonify({"message": "Accounts deactivated successfully"}), 200
+
+@users_bp.route('/delete_account', methods=['POST'])
+def delete_account():
+    data = request.get_json()
+    emails = data.get('emails')
+    logger.info(f"Deleting accounts for emails: {emails}")
+    conn = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        # Generate a placeholder string for each email
+        placeholders = ', '.join(['%s'] * len(emails))
+        query = f'DELETE FROM users WHERE email IN ({placeholders})'
+        cursor.execute(query, tuple(emails))
+        conn.commit()
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        logger.error(f"Error deleting accounts: {e}")
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+    return jsonify({"message": "Accounts deleted successfully"}), 200

@@ -27,8 +27,8 @@ export default function AddMod() {
   };
 
   return (
-    <div>
-      <form className="w-[300px] mx-[200px]" onSubmit={handleLogin}>
+    <div className="flex justify-center items-center">
+      <form className="w-[300px] max-w-md mx-auto" onSubmit={handleLogin}>
         <div className="mb-5">
           <label
             htmlFor="email"

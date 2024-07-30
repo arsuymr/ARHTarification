@@ -42,7 +42,6 @@ const SideBarOp = ({ OperateurID }) => {
         `http://127.0.0.1:5000/operator/${operateurId}/usines`
       );
       setUsines(response.data);
-      console.log(usines, "piiiiiiiiiiiiiiiiw");
     } catch (error) {
       console.error("Error getting usines:", error);
     }
@@ -169,7 +168,7 @@ const SideBarOp = ({ OperateurID }) => {
                           ))}
                           <li>
                             <button
-                              className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                              className="flex font-semibold text-[#21466F] items-center w-full p-2 text-base transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                               onClick={() => handleAjouterUnity(usine.UsineID)}
                             >
                               Ajouter Unité
@@ -181,7 +180,7 @@ const SideBarOp = ({ OperateurID }) => {
                 ))}
                 <li>
                   <button
-                    className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                    className="flex items-center w-full p-2 text-base font-semibold text-[#21466F] transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                     onClick={handleAjouterUsine}
                   >
                     Ajouter usine
@@ -189,7 +188,7 @@ const SideBarOp = ({ OperateurID }) => {
                 </li>
                 <li>
                   <button
-                    className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                    className="flex items-center w-full p-2 text-base font-semibold text-[#21466F] transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                     onClick={handleAqUsine}
                   >
                     Acquisition d'une usine

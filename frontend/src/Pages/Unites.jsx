@@ -3,8 +3,9 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import CardUnity from "../Components.jsx/carteUnite";
 import SideBarOp from "../Components.jsx/SideBarOp";
+import SideBarARH from "../Components.jsx/SideBarARH";
 
-export default function Unites() {
+export default function Unites({ role }) {
   const { UsineID } = useParams();
   const { OperateurID } = useParams();
   const [usines, setUsines] = useState([]);
@@ -21,7 +22,6 @@ export default function Unites() {
         `http://127.0.0.1:5000/operator/${UsineID}/units`
       );
       setUsines(response.data);
-      console.log("hbieng", usines);
     } catch (error) {
       console.error("Error getting usines:", error);
     }
@@ -29,12 +29,19 @@ export default function Unites() {
 
   return (
     <div className="flex">
-      {" "}
-      <SideBarOp OperateurID={OperateurID} />
+      {role === "ADMINARH" ? (
+        <SideBarARH />
+      ) : (
+        <SideBarOp OperateurID={OperateurID} />
+      )}
       <div className="flex  gap-7 p-6">
         {usines.length > 0 ? (
           usines.map((usine) => (
-            <CardUnity key={usine.id} NomUnity={usine.NomUnity} />
+            <CardUnity
+              key={usine.id}
+              NomUnity={usine.NomUnity}
+              typ={usine.typ}
+            />
           ))
         ) : (
           <p>No unities available</p>

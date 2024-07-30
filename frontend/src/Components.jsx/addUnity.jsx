@@ -28,8 +28,8 @@ export default function AddUnity({ UsineID }) {
   };
 
   return (
-    <div>
-      <form className="w-[300px] mx-[200px]" onSubmit={handleLogin}>
+    <div className="flex justify-center items-center">
+      <form className="w-[300px] max-w-md mx-auto" onSubmit={handleLogin}>
         <div className="mb-5">
           <label
             htmlFor="nomUsine"
@@ -41,7 +41,7 @@ export default function AddUnity({ UsineID }) {
             type="text"
             id="nomUsine"
             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
-            placeholder="Nom de l'usine"
+            placeholder="Nom de l'unité"
             value={NomUnity}
             onChange={(e) => setNomUsine(e.target.value)}
             required
@@ -62,7 +62,7 @@ export default function AddUnity({ UsineID }) {
             required
           >
             <option value="" disabled>
-              Sélectionner option
+              Sélectionner type
             </option>
             {wilayas.map((wilaya) => (
               <option key={wilaya} value={wilaya}>
