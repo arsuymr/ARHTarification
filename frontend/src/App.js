@@ -14,7 +14,6 @@ import AccueilModOp from "./Pages/ModeratorOperator/AccueilModOp";
 import GestionModARH from "./Pages/AdminARH/GestionModARH";
 import GestionModOp from "./Pages/AdminOperator/GestionModOp";
 import DetailsOperator from "./Pages/AdminARH/DetailsOperator";
-import Account from "./Components.jsx/Account";
 function App() {
   return (
     <Router>

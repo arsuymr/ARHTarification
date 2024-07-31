@@ -1,4 +1,6 @@
 from flask import Flask
+from werkzeug.security import generate_password_hash
+from flask_mail import Mail
 from flask_cors import CORS
 from bleuprints.test import compte_bp
 from bleuprints.SaisitControler import saisit_bp
@@ -24,6 +26,17 @@ app.register_blueprint(param_bp, url_prefix='/param')
 app.register_blueprint(users_bp, url_prefix='/users')
 app.register_blueprint(Resultat_bp, url_prefix='/resultat')
 
+# Flask-Mail configuration
+# Configuration Flask-Mail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'aminatinhineneouadi@gmail.com'
+app.config['MAIL_PASSWORD'] = 'sgrz ofxb phqs fprc'
+app.config['MAIL_DEFAULT_SENDER'] = 'aminatinhineneouadi@gmail.com'
+
+mail = Mail(app)
 
 
 @app.route('/')
@@ -32,3 +45,4 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
+    

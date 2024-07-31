@@ -4,22 +4,13 @@ from .db import get_db
 import logging
 from flask_mail import  Message
 import secrets
+import string
+import random
 
 users_bp = Blueprint('users', __name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
-
-
-def send_welcome_email(mod):
-    subject = "Bienvenue en tant que modérateur"
-    body = f"\n\nBonjour {mod.name},\n\nVotre compte de modérateur a été créé avec succès.\nVotre EMAIL : {mod.email}\nVotre Password : {mod.password}\nCordialement,\nVotre application Paper"
-
-    msg = Message(subject=subject, sender='aminatinhineneouadi@gmail.com', recipients=[mod.email], body=body)
-
-    mail = current_app.extensions['mail']
-    mail.send(msg)
 
 @users_bp.route('/login', methods=['POST'])
 def login():
@@ -61,21 +52,35 @@ def logout():
     session.pop('rol', None)
     return jsonify({"message": "Logout successful"}), 200
 
+
+def generate_random_password(length=10):
+    characters = string.ascii_letters + string.digits
+    password = ''.join(random.choice(characters) for i in range(length))
+    return password
+
+def send_email(subject, recipient, body):
+    msg = Message(subject, recipients=[recipient])
+    msg.body = body
+    mail = current_app.extensions.get('mail')
+    mail.send(msg)
+
 @users_bp.route('/create_user', methods=['POST'])
 def create_user():
     data = request.get_json()
     username = data.get('username')
     email = data.get('email')
-    operateur_id=data.get('OperateurID')
-    password = generate_password_hash("Yusra")
-    #HADI TWELI RANDOM
+    operateur_id = data.get('OperateurID')
+    password = generate_random_password()
+    hashed_password = generate_password_hash(password)
+
     conn = None
     try:
         conn = get_db()
         cursor = conn.cursor()
-        query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s,"moderator", %s)'
-        cursor.execute(query, (username, email, password, operateur_id))
+        query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s, "moderator", %s)'
+        cursor.execute(query, (username, email, hashed_password, operateur_id))
         conn.commit()
+        send_email('Your New Account', email, f'Your password is: {password}')
     except Exception as e:
         if conn:
             conn.rollback()
@@ -91,15 +96,17 @@ def create_userARH():
     data = request.get_json()
     username = data.get('username')
     email = data.get('email')
-    password = generate_password_hash("Yusra")
-    #HADI TWELI RANDOM
+    password = generate_random_password()
+    hashed_password = generate_password_hash(password)
+
     conn = None
     try:
         conn = get_db()
         cursor = conn.cursor()
-        query = 'INSERT INTO users (username, email, rol, pas) VALUES (%s, %s,"moderator", %s)'
-        cursor.execute(query, (username, email, password))
+        query = 'INSERT INTO users (username, email, pas, rol) VALUES (%s, %s, %s, "moderator")'
+        cursor.execute(query, (username, email, hashed_password))
         conn.commit()
+        send_email('Your New Account', email, f'Your password is: {password}')
     except Exception as e:
         if conn:
             conn.rollback()
@@ -339,3 +346,42 @@ def get_user():
         return jsonify(user), 200
     else:
         return jsonify({"error": "User not found"}), 404
+
+@users_bp.route('/update_password', methods=['POST'])
+def update_password():
+    data = request.get_json()
+    user_id = data.get('userID')
+    previous_password = data.get('previous_password')
+    new_password = data.get('password')
+    
+    conn = None
+    cursor = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Fetch the current password hash from the database
+        query = 'SELECT pas FROM users WHERE UserID = %s'
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+        
+        if not result or not check_password_hash(result['pas'], previous_password):
+            return jsonify({"error": "Previous password is incorrect"}), 400
+        
+        # Update the password
+        hashed_password = generate_password_hash(new_password)
+        update_query = 'UPDATE users SET pas = %s WHERE UserID = %s'
+        cursor.execute(update_query, (hashed_password, user_id))
+        conn.commit()
+        
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+    
+    return jsonify({"message": "Password updated successfully"}), 200

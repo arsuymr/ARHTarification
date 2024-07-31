@@ -14,6 +14,7 @@ import {
   HiChevronDown,
 } from "react-icons/hi";
 import AddOperator from "./AddOperator";
+import UpdatePassword from "./UpdatePassword";
 
 const SideBarARH = ({ Role }) => {
   const { UserID } = useParams();
@@ -21,6 +22,7 @@ const SideBarARH = ({ Role }) => {
   const [operators, setOperators] = useState([]);
   const [user, setUser] = useState({});
   const [showAddOperator, setShowAddOperator] = useState(false);
+  const [showUpdatePassword, setShowUpdatePassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,6 +61,14 @@ const SideBarARH = ({ Role }) => {
   const handleAddOperatorSuccess = () => {
     setShowAddOperator(false);
     getOperators();
+  };
+
+  const handleUpdatePassword = () => {
+    setShowUpdatePassword(true);
+  };
+
+  const handleUpdatePasswordSuccess = () => {
+    setShowUpdatePassword(false);
   };
 
   return (
@@ -153,13 +163,19 @@ const SideBarARH = ({ Role }) => {
               Connected as {user.username}
             </div>
             <div className="flex-1 ml-3 whitespace-nowrap font-bold">
-              <Link to={`/change-password/${UserID}`}>Change Password</Link>
+              <button onClick={handleUpdatePassword}>Change Password</button>
             </div>
           </div>
         </div>
       </aside>
       <Modal show={showAddOperator} onClose={() => setShowAddOperator(false)}>
         <AddOperator onSuccess={handleAddOperatorSuccess} />
+      </Modal>
+      <Modal
+        show={showUpdatePassword}
+        onClose={() => setShowUpdatePassword(false)}
+      >
+        <UpdatePassword onSuccess={handleUpdatePasswordSuccess} />
       </Modal>
     </div>
   );

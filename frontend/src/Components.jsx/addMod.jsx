@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-export default function AddMod() {
+export default function AddMod({ onSuccess }) {
   const { OperateurID } = useParams();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -20,9 +20,10 @@ export default function AddMod() {
           OperateurID: OperateurID,
         }
       );
+      onSuccess();
     } catch (error) {
       console.error("Error logging in:", error);
-      setError("Invalid email or password");
+      setError("Mot de passe ou email invalide.");
     }
   };
 

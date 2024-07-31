@@ -3,7 +3,6 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Card from "../../Components.jsx/carte";
 import SideBarARH from "../../Components.jsx/SideBarARH";
-import SideBarModARH from "../../Components.jsx/SideBarModARH";
 
 export default function AccueilModARH() {
   const { OperateurID, UserID } = useParams();

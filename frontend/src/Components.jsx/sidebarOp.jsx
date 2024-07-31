@@ -13,6 +13,7 @@ import AddUnity from "./addUnity"; // Import the AddUnity component
 import Modal from "./Modal"; // Import the Modal component
 import AddUsine from "./ajoutUsine";
 import AqUsine from "./aqUsine";
+import UpdatePassword from "./UpdatePassword";
 
 const SideBarOp = ({ Role }) => {
   const { OperateurID, UserID } = useParams();
@@ -24,6 +25,7 @@ const SideBarOp = ({ Role }) => {
   const [showAqUsine, setShowAqUsine] = useState(false);
   const [showAddUnity, setShowAddUnity] = useState(false);
   const [currentUsineId, setCurrentUsineId] = useState(null);
+  const [showUpdatePassword, setShowUpdatePassword] = useState(false);
   const [user, setUser] = useState({});
   const navigate = useNavigate();
 
@@ -112,6 +114,13 @@ const SideBarOp = ({ Role }) => {
     }
   };
 
+  const handleUpdatePassword = () => {
+    setShowUpdatePassword(true);
+  };
+
+  const handleUpdatePasswordSuccess = () => {
+    setShowUpdatePassword(false);
+  };
   return (
     <div className="h-screen relative">
       <aside className="w-64 h-full" aria-label="Sidebar">
@@ -244,7 +253,7 @@ const SideBarOp = ({ Role }) => {
               Connected as {user.username}
             </div>
             <div className="flex-1 ml-3 whitespace-nowrap font-bold">
-              <Link to={`/change-password/${UserID}`}>Change Password</Link>
+              <button onClick={handleUpdatePassword}>Change Password</button>
             </div>
           </div>
         </div>
@@ -260,6 +269,13 @@ const SideBarOp = ({ Role }) => {
 
       <Modal show={showAqUsine} onClose={() => setShowAqUsine(false)}>
         <AqUsine onSuccess={handleAqUsineSuccess} />
+      </Modal>
+
+      <Modal
+        show={showUpdatePassword}
+        onClose={() => setShowUpdatePassword(false)}
+      >
+        <UpdatePassword onSuccess={handleUpdatePasswordSuccess} />
       </Modal>
     </div>
   );

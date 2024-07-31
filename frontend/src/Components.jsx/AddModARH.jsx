@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-export default function AddModARH() {
+export default function AddModARH({ onSuccess }) {
   const { OperateurID } = useParams();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -19,10 +19,10 @@ export default function AddModARH() {
           username: username,
         }
       );
-      console.log("Creating ARH user ...", response);
+      onSuccess();
     } catch (error) {
       console.error("Error logging in:", error);
-      setError("Invalid email or password");
+      setError("Mot de passe ou email invalide.");
     }
   };
 
@@ -51,7 +51,7 @@ export default function AddModARH() {
             htmlFor="text"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Username
+            Nom d'utilisateur
           </label>
           <input
             type="text"
