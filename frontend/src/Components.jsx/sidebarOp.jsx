@@ -93,12 +93,10 @@ const SideBarOp = ({ Role }) => {
   };
 
   const handleAddUsineSuccess = () => {
-    setShowAddUsine(false);
     getUsines(OperateurID);
   };
 
   const handleAqUsineSuccess = () => {
-    setShowAqUsine(false);
     getUsines(OperateurID);
   };
 
@@ -108,7 +106,6 @@ const SideBarOp = ({ Role }) => {
   };
 
   const handleAddUnitySuccess = () => {
-    setShowAddUnity(false);
     if (selectedUsine) {
       getUnits(selectedUsine.UsineID);
     }

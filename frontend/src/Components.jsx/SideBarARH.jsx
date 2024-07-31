@@ -59,7 +59,6 @@ const SideBarARH = ({ Role }) => {
   };
 
   const handleAddOperatorSuccess = () => {
-    setShowAddOperator(false);
     getOperators();
   };
 
@@ -67,9 +66,7 @@ const SideBarARH = ({ Role }) => {
     setShowUpdatePassword(true);
   };
 
-  const handleUpdatePasswordSuccess = () => {
-    setShowUpdatePassword(false);
-  };
+  const handleUpdatePasswordSuccess = () => {};
 
   return (
     <div className="h-screen">

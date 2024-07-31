@@ -2,10 +2,20 @@ import React, { useState } from "react";
 import usine from "../assets/petrole.svg";
 import axios from "axios";
 import { useParams } from "react-router";
+import ConfirmDialog from "./ConfirmDialog";
 
-export default function Card({ NomUsine, Wilaya, onClick, UsineID }) {
+export default function Card({ NomUsine, Wilaya, onClick, UsineID, onDelet }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { OperateurID } = useParams();
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const toggleDropdown = (e) => {
     e.stopPropagation();
@@ -23,6 +33,7 @@ export default function Card({ NomUsine, Wilaya, onClick, UsineID }) {
         }
       );
       console.log(response.data);
+      onDelet();
     } catch (error) {
       console.error("Error deleting usine:", error);
     }
@@ -60,26 +71,10 @@ export default function Card({ NomUsine, Wilaya, onClick, UsineID }) {
         >
           <ul className="py-2" aria-labelledby="dropdownButton">
             <li>
-              <a
-                href="#"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-              >
-                Edit
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-              >
-                Export Data
-              </a>
-            </li>
-            <li>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDelete();
+                  handleOpen();
                 }}
                 className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
               >
@@ -100,6 +95,13 @@ export default function Card({ NomUsine, Wilaya, onClick, UsineID }) {
           {Wilaya}
         </span>
       </div>
+      <ConfirmDialog
+        open={open}
+        onClose={handleClose}
+        onConfirm={onDelete}
+        title="Confirmation de suppression"
+        description="Êtes-vous sûr(e) de vouloir supprimer cette usine?"
+      />
     </div>
   );
 }

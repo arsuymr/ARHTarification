@@ -1,7 +1,7 @@
 import React from "react";
-import SideBarOp from "../../Components.jsx/SideBarOp";
 import { useParams } from "react-router";
 import Mod from "../../Components.jsx/mod";
+import SideBarOp from "../../Components.jsx/SideBarOp.jsx";
 
 export default function GestionModOp() {
   const { OperateurID } = useParams();

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router";
 import Modal from "./Modal";
 import AddModARH from "./AddModARH";
+import ConfirmDialog from "./ConfirmDialog";
 
 export default function ModARH() {
   const { OperateurID } = useParams();
@@ -11,6 +12,15 @@ export default function ModARH() {
   const [error, setError] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showAddMod, setShowAddMod] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const getMod = async () => {
     try {
@@ -38,7 +48,6 @@ export default function ModARH() {
   };
 
   const handleAddModSuccess = () => {
-    setShowAddMod(false);
     getMod();
   };
 
@@ -55,7 +64,6 @@ export default function ModARH() {
       await axios.post("http://127.0.0.1:5000/users/activate_account", {
         emails: selectedUsers,
       });
-      alert("Selected accounts activated successfully");
       getMod();
     } catch (error) {
       console.error("Error activating accounts:", error);
@@ -67,7 +75,7 @@ export default function ModARH() {
       await axios.post("http://127.0.0.1:5000/users/deactivate_account", {
         emails: selectedUsers,
       });
-      alert("Selected accounts deactivated successfully");
+
       getMod();
     } catch (error) {
       console.error("Error deactivating accounts:", error);
@@ -79,8 +87,8 @@ export default function ModARH() {
       await axios.post("http://127.0.0.1:5000/users/delete_account", {
         emails: selectedUsers,
       });
-      alert("Selected accounts deleted successfully");
       getMod();
+      handleClose();
     } catch (error) {
       console.error("Error deleting accounts:", error);
     }
@@ -182,8 +190,8 @@ export default function ModARH() {
             </ul>
             <div className="py-1">
               <button
-                onClick={deleteAccounts}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white w-full text-left"
+                onClick={handleOpen}
+                className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white w-full text-left"
               >
                 Supprimer un compte
               </button>
@@ -270,6 +278,13 @@ export default function ModARH() {
       <Modal show={showAddMod} onClose={() => setShowAddMod(false)}>
         <AddModARH onSuccess={handleAddModSuccess} />
       </Modal>
+      <ConfirmDialog
+        open={open}
+        onClose={handleClose}
+        onConfirm={deleteAccounts}
+        title="Confirmation de suppression"
+        description="Êtes-vous sûr(e) de vouloir supprimer les comptes sélectionnés?"
+      />
     </div>
   );
 }

@@ -1,34 +1,37 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
-export default function UpdatePassword() {
-  const { userID } = useParams();
+export default function UpdatePassword({ onSuccess }) {
+  const { UserID } = useParams();
   const [previousPassword, setPreviousPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Les mots de passe ne correspondent pas.");
       return;
     }
     try {
+      console.log(previousPassword, newPassword, UserID);
       const response = await axios.post(
         "http://127.0.0.1:5000/users/update_password",
         {
           previous_password: previousPassword,
           password: newPassword,
-          userID: userID,
+          userID: UserID,
         }
       );
-      console.log(response);
+      setSuccess("Mot de passe modifié avec succès!");
       setError("");
     } catch (error) {
-      console.error("Error updating password:", error);
-      setError("Error updating password");
+      setError("Erreur lors de la modification");
     }
   };
 
@@ -86,10 +89,19 @@ export default function UpdatePassword() {
             required
           />
         </div>
-        {error && <div className="mb-5 text-sm text-red-500">{error}</div>}
+        {error && (
+          <Stack className="w-full mb-5">
+            <Alert severity="error">{error}</Alert>
+          </Stack>
+        )}
+        {success && (
+          <Stack className="w-full mb-5">
+            <Alert severity="success">{success}</Alert>
+          </Stack>
+        )}
         <button
           type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Modifier mot de passe
         </button>

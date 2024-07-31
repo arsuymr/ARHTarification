@@ -3,6 +3,8 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Card from "../../Components.jsx/carte";
 import SideBarARH from "../../Components.jsx/SideBarARH";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 export default function DetailsOperator() {
   const { OperateurID, UserID } = useParams();
@@ -31,20 +33,25 @@ export default function DetailsOperator() {
   };
 
   return (
-    <div className="flex flex-wrap gap-7 p-6">
+    <div className="flex">
       <SideBarARH Role="ADMIN" />
+
       {usines.length > 0 ? (
         usines.map((usine) => (
-          <Card
-            key={usine.id}
-            NomUsine={usine.NomUsine}
-            Wilaya={usine.Wilaya}
-            UsineID={usine.UsineID}
-            onClick={() => handleCardClick(usine.UsineID)}
-          />
+          <div className="flex flex-wrap gap-7 p-6">
+            <Card
+              key={usine.id}
+              NomUsine={usine.NomUsine}
+              Wilaya={usine.Wilaya}
+              UsineID={usine.UsineID}
+              onClick={() => handleCardClick(usine.UsineID)}
+            />
+          </div>
         ))
       ) : (
-        <p>No usines available</p>
+        <Stack className="w-full m-6 ">
+          <Alert severity="info">Aucune usine à afficher.</Alert>
+        </Stack>
       )}
     </div>
   );

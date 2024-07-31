@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
-export default function AqUsine() {
+export default function AqUsine({ onSuccess }) {
   const { OperateurID } = useParams();
   const [usines, setUsines] = useState([]);
   const [selectedUsine, setSelectedUsine] = useState(null);
@@ -39,6 +41,7 @@ export default function AqUsine() {
       });
       setSuccess("Acquisition réussie!");
       setSelectedUsine(null); // Reset selected usine
+      onSuccess();
     } catch (error) {
       console.error("Error acquiring usine:", error);
       setError("Erreur lors de l'acquisition de l'usine. Veuillez réessayer.");
@@ -48,11 +51,17 @@ export default function AqUsine() {
   return (
     <div className="flex justify-center items-center">
       <div className="w-[300px] max-w-md mx-auto">
-        <h2 className="text-xl font-semibold mb-6">Acquérir une Usine</h2>
+        <h2 className="text-xl font-semibold mb-6">Acquérir une usine</h2>
 
-        {error && <div className="mb-4 text-sm text-red-500">{error}</div>}
+        {error && (
+          <Stack sx={{ width: "100%" }} spacing={2}>
+            <Alert severity="error">{error}</Alert>
+          </Stack>
+        )}
         {success && (
-          <div className="mb-4 text-sm text-green-500">{success}</div>
+          <Stack className="w-full mb-5">
+            <Alert severity="success">{success}</Alert>
+          </Stack>
         )}
 
         <ul className="space-y-2">

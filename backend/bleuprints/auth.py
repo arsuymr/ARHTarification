@@ -62,7 +62,14 @@ def send_email(subject, recipient, body):
     msg = Message(subject, recipients=[recipient])
     msg.body = body
     mail = current_app.extensions.get('mail')
-    mail.send(msg)
+    
+    try:
+        mail.send(msg)
+        return True
+    except Exception as e:
+        # Log the exception if necessary
+        print(f"Failed to send email: {e}")
+        return False
 
 @users_bp.route('/create_user', methods=['POST'])
 def create_user():
@@ -79,8 +86,11 @@ def create_user():
         cursor = conn.cursor()
         query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s, "moderator", %s)'
         cursor.execute(query, (username, email, hashed_password, operateur_id))
-        conn.commit()
-        send_email('Your New Account', email, f'Your password is: {password}')
+        if send_email('Your New Account', email, f'Your password is: {password}'):
+            conn.commit()
+        else:
+            conn.rollback()
+            return jsonify({"error": "Failed to send email"}), 500
     except Exception as e:
         if conn:
             conn.rollback()
@@ -98,15 +108,17 @@ def create_userARH():
     email = data.get('email')
     password = generate_random_password()
     hashed_password = generate_password_hash(password)
-
     conn = None
     try:
         conn = get_db()
         cursor = conn.cursor()
         query = 'INSERT INTO users (username, email, pas, rol) VALUES (%s, %s, %s, "moderator")'
         cursor.execute(query, (username, email, hashed_password))
-        conn.commit()
-        send_email('Your New Account', email, f'Your password is: {password}')
+        if send_email('Your New Account', email, f'Your password is: {password}'):
+            conn.commit()
+        else:
+            conn.rollback()
+            return jsonify({"error": "Failed to send email"}), 500
     except Exception as e:
         if conn:
             conn.rollback()
@@ -116,6 +128,7 @@ def create_userARH():
             conn.close()
 
     return jsonify({"message": "User created successfully"}), 201
+
 
 @users_bp.route('/get_mod', methods=['POST'])
 def get_mod():
@@ -220,16 +233,21 @@ def create_adminOp():
     data = request.get_json()
     username = data.get('username')
     email = data.get('email')
-    operator_id=data.get('OperateurID')
-    #this must change
-    password = generate_password_hash("Yusra")
+    operator_id = data.get('OperateurID')
+    password = generate_random_password()
+    hashed_password = generate_password_hash(password)
     conn = None
     try:
         conn = get_db()
         cursor = conn.cursor()
-        query = 'INSERT INTO users (username, email, pas,rol,OperateurID) VALUES (%s, %s, %s,"admin",%s)'
-        cursor.execute(query, (username, email, password,operator_id))
-        conn.commit()
+        query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s, "admin", %s)'
+        cursor.execute(query, (username, email, hashed_password, operator_id))
+        # Commit after ensuring email is sent
+        if send_email('Your New Account', email, f'Your password is: {password}'):
+            conn.commit()
+        else:
+            conn.rollback()
+            return jsonify({"error": "Failed to send email"}), 500
     except Exception as e:
         if conn:
             conn.rollback()
@@ -238,7 +256,8 @@ def create_adminOp():
         if conn:
             conn.close()
 
-    return jsonify({"message": "Admin Operateur crée avec succès"}), 201
+    return jsonify({"message": "Admin Operateur créé avec succès"}), 201
+
 
 @users_bp.route('/activate_account', methods=['POST'])
 def activate_account():
@@ -385,3 +404,49 @@ def update_password():
             conn.close()
     
     return jsonify({"message": "Password updated successfully"}), 200
+
+
+@users_bp.route("/addOperator", methods=["POST"])
+def addOperator():
+    data = request.get_json()
+    NomOperator = data.get('Nom_operateur', None)
+    Email = data.get('Email', None)
+    Username = data.get('Username', None)
+    password = generate_random_password()
+    hashed_password = generate_password_hash(password)
+    
+    if not NomOperator or not Email or not Username:
+        return jsonify({"error": "NomOperator, email, and username are required"}), 400
+
+    conn = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        # Insert into operateur table
+        query = 'INSERT INTO operateur (Nom_operateur) VALUES (%s);'
+        cursor.execute(query, (NomOperator,))
+        conn.commit()
+        
+        OperateurID = cursor.lastrowid
+        
+        # Insert into users table
+        query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s, %s, %s)'
+        cursor.execute(query, (Username, Email, hashed_password, "admin", OperateurID))
+        
+        # Send email with plaintext password
+        email_sent = send_email('Your New Account', Email, f'Your password is: {password}')
+        if not email_sent:
+            conn.rollback()
+            return jsonify({"error": "Failed to send email"}), 500
+        
+        conn.commit()
+    
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+    return jsonify({"message": "Operator created successfully"}), 201

@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 const wilayas = ["liquefaction", "separation", "liquefaction et separation"];
 
-export default function AddUnity({ UsineID }) {
+export default function AddUnity({ UsineID, onSuccess }) {
   const [NomUnity, setNomUsine] = useState("");
   const [Wilaya, setWilaya] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,6 +24,8 @@ export default function AddUnity({ UsineID }) {
         }
       );
       console.log(response);
+      setSuccess("Unité ajouté avec succès!");
+      onSuccess();
     } catch (error) {
       console.error("Error adding usine:", error);
       setError("Error adding usine. Please try again.");
@@ -71,10 +76,19 @@ export default function AddUnity({ UsineID }) {
             ))}
           </select>
         </div>
-        {error && <div className="mb-5 text-sm text-red-500">{error}</div>}
+        {error && (
+          <Stack sx={{ width: "100%" }} spacing={2}>
+            <Alert severity="error">{error}</Alert>
+          </Stack>
+        )}
+        {success && (
+          <Stack className="w-full mb-5">
+            <Alert severity="success">{success}</Alert>
+          </Stack>
+        )}
         <button
           type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Ajouter Unité
         </button>

@@ -19,7 +19,10 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Auth />} />
-        <Route path="/admin-op/:UserID/:OperateurID" element={<AccueilOp />} />
+        <Route
+          path="/admin-op/:UserID/:OperateurID"
+          element={<AccueilOp role="ADMIN" />}
+        />
         <Route path="/admin-arh/:UserID/" element={<Charts role="ADMIN" />} />
         <Route
           path="/admin-arh/:UserID/:OperateurID"
@@ -30,7 +33,10 @@ function App() {
           element={<Unites role="ADMINARH" />}
         />
         <Route path="/mod-arh/:UserID/" element={<AccueilModARH />} />
-        <Route path="/mod-op/:UserID/:OperateurID" element={<AccueilModOp />} />
+        <Route
+          path="/mod-op/:UserID/:OperateurID"
+          element={<AccueilOp role="USER" />}
+        />
         <Route
           path="/admin-op/:UserID/:OperateurID/:UnityID/tableau"
           element={<TableauComplet />}

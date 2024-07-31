@@ -3,8 +3,10 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Card from "../../Components.jsx/carte";
 import SideBarOp from "../../Components.jsx/SideBarOp";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
-export default function AccueilOp() {
+export default function AccueilOp({ role }) {
   const { OperateurID, UserID } = useParams();
   const [usines, setUsines] = useState([]);
   const navigate = useNavigate();
@@ -30,21 +32,31 @@ export default function AccueilOp() {
     navigate(`/admin-op/${UserID}/${OperateurID}/${usineId}`);
   };
 
+  const onDelet = () => {
+    getUsines();
+    navigate(`/admin-op/${UserID}/${OperateurID}`);
+  };
+
   return (
-    <div className="flex flex-wrap gap-7 p-6">
-      <SideBarOp OperateurID={OperateurID} Role="ADMIN" />
+    <div className="flex ">
+      <SideBarOp OperateurID={OperateurID} Role={role} />
       {usines.length > 0 ? (
         usines.map((usine) => (
-          <Card
-            key={usine.id}
-            NomUsine={usine.NomUsine}
-            Wilaya={usine.Wilaya}
-            UsineID={usine.UsineID}
-            onClick={() => handleCardClick(usine.UsineID)}
-          />
+          <div className="flex flex-wrap gap-7 p-6">
+            <Card
+              key={usine.id}
+              NomUsine={usine.NomUsine}
+              Wilaya={usine.Wilaya}
+              UsineID={usine.UsineID}
+              onClick={() => handleCardClick(usine.UsineID)}
+              onDelet={onDelet}
+            />
+          </div>
         ))
       ) : (
-        <p>No usines available</p>
+        <Stack className="w-full m-6 ">
+          <Alert severity="info">Aucune usine à afficher.</Alert>
+        </Stack>
       )}
     </div>
   );
