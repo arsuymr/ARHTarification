@@ -126,7 +126,7 @@ export default function SimulationPage({ role }) {
     <div className="flex">
       <SideBarARH Role={role} />
       <Box sx={{ padding: 4, paddingTop: 2 }}>
-        <TabDashboard />
+        <TabDashboard role={role} />
         <h4 variant="h4" className="text-xl mt-4  ">
           Simulation De L'annee {new Date().getFullYear()} :
         </h4>

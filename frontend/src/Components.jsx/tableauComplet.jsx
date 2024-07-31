@@ -145,18 +145,21 @@ export default function TableauComplet() {
 
           </div>
         ) : null}
-        {classes.map((classe) => (
-          <div key={classe.ID}>
-            <div className="font-semibold text-xl ml-3 mt-[40px] mb-[10px]">
-              {classe.NomClasse}
+        <div className="mb-10">
+          {classes.map((classe) => (
+            <div key={classe.ID}>
+              <div className="font-semibold text-xl ml-3 mt-[40px] mb-[10px]">
+                {classe.NomClasse}
+              </div>
+              {classe && classe.ID && controleCout && controleCout.CCID && (
+                <Tableau IDClasse={classe.ID} CCID={controleCout.CCID} onAllInputsFilledChange={handleAllInputsFilledChange} />
+              )}
             </div>
-            {classe && classe.ID && controleCout && controleCout.CCID && (
-              <Tableau IDClasse={classe.ID} CCID={controleCout.CCID} onAllInputsFilledChange={handleAllInputsFilledChange} />
-            )}
-          </div>
-        ))}
+          ))}
+        </div>
+
         {controleCout && (
-          <div>
+          <div className="flex justify-center mb-10">
             {!controleCout.valide && (
               <Button onClick={handleOpen2} variant="contained" className="bg-indigo-600" >
                 Valider le Controle de Coût

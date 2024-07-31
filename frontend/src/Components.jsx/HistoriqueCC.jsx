@@ -69,7 +69,10 @@ export default function HistoriqueCC({ role }) {
         <div className="flex">
             <SideBarARH Role={role} />
             <div className="flex flex-col w-screen mb-10">
-                <TabDashboard />
+                <div className="p-4 pt-2">
+                    <TabDashboard role={role} />
+                </div>
+
                 <div className="flex pt-4 justify-center">
                     <div className="w-1/4">
                         <label className="font-medium text-gray-700">Select Operator</label>

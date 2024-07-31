@@ -118,7 +118,7 @@ export default function Charts({ role }) {
       <SideBarARH Role={role} />
       <div className="m-2 w-[2560px]  ">
         <div className="p-4 pt-2">
-          <TabDashboard />
+          <TabDashboard role={role} />
         </div>
         <h1 className="text-2xl m-4"> Representation Graphique</h1>
         <div className="flex  gap-4 justify-center  items-center  mb-14 ">
