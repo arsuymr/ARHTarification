@@ -168,7 +168,7 @@ export default function ModARH() {
                   onClick={handleAddMod}
                   className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left"
                 >
-                  Ajouter un modérateur
+                  Ajouter un utilisateur
                 </button>
               </li>
               <li>
@@ -215,13 +215,13 @@ export default function ModARH() {
               </div>
             </th>
             <th scope="col" className="px-6 py-3">
-              Username
+              Nom d'utilisateur
             </th>
             <th scope="col" className="px-6 py-3">
               Email
             </th>
             <th scope="col" className="px-6 py-3">
-              Status
+              Statut
             </th>
           </tr>
         </thead>

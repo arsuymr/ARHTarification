@@ -85,7 +85,7 @@ const SideBarOp = ({ Role }) => {
   };
 
   const handleAjouterUsine = () => {
-    console.log("hayaaaaa")
+    console.log("hayaaaaa");
     setShowAddUsine(true);
   };
 
@@ -120,7 +120,7 @@ const SideBarOp = ({ Role }) => {
     setShowUpdatePassword(false);
   };
   return (
-    <div className="bg-gray-50 h-max">
+    <div className="bg-gray-50 h-screen relative">
       <aside className="w-64 " aria-label="Sidebar">
         <div className="px-3 overflow-y-auto rounded">
           <div className="flex items-center justify-center mb-4">
@@ -152,8 +152,9 @@ const SideBarOp = ({ Role }) => {
                   Usines
                 </span>
                 <HiChevronDown
-                  className={`w-6 h-6 transition-transform ${isOpen ? "rotate-180" : ""
-                    }`}
+                  className={`w-6 h-6 transition-transform ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
                 />
               </button>
               <ul
@@ -225,7 +226,7 @@ const SideBarOp = ({ Role }) => {
                       navigate(`/admin-op/${UserID}/${OperateurID}/AjouterMod`)
                     }
                   >
-                    Modérateurs
+                    Utilisateurs
                   </span>
                 </button>
               </li>
@@ -244,19 +245,21 @@ const SideBarOp = ({ Role }) => {
                   </span>
                 </button>
               </li>
-            ) : <li>
-              <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                <span
-                  className="flex-1 ml-3 whitespace-nowrap "
-                  onClick={() =>
-                    navigate(`/user-op/${UserID}/${OperateurID}/Historique`)
-                  }
-                >
-                  Historique
-                </span>
-              </button>
-            </li>}
+            ) : (
+              <li>
+                <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                  <span
+                    className="flex-1 ml-3 whitespace-nowrap "
+                    onClick={() =>
+                      navigate(`/user-op/${UserID}/${OperateurID}/Historique`)
+                    }
+                  >
+                    Historique
+                  </span>
+                </button>
+              </li>
+            )}
             <li>
               <NavLink
                 to="/sign-in"
@@ -270,13 +273,15 @@ const SideBarOp = ({ Role }) => {
             </li>
           </ul>
         </div>
-        <div className="w-full p-4 text-center text-gray-900 dark:text-white">
-          <div className="mb-0">
-            <div className="flex-1 ml-3 whitespace-nowrap">
-              Connected as {user.username}
+        <div className="absolute bottom-0 w-full p-4 text-center text-gray-900 dark:text-white">
+          <div className="flex flex-col items-start ml-1">
+            <div className="flex-1 whitespace-nowrap">
+              Connecté en tant que {user.username}
             </div>
-            <div className="flex-1 ml-3 whitespace-nowrap font-bold">
-              <button onClick={handleUpdatePassword}>Change Password</button>
+            <div className="flex-1 whitespace-nowrap">
+              <button className="font-bold" onClick={handleUpdatePassword}>
+                Changer mot de passe.
+              </button>
             </div>
           </div>
         </div>

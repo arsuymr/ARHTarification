@@ -24,7 +24,7 @@ def login():
     try:
         conn = get_db()
         with conn.cursor(dictionary=True) as cursor:
-            query = 'SELECT * FROM Users WHERE Email = %s'
+            query = 'SELECT * FROM Users WHERE Email = %s AND statut=1'
             cursor.execute(query, (email,))
             user = cursor.fetchone()
     except Exception as e:
@@ -41,7 +41,7 @@ def login():
         "message": "Login successful",
         "rol": user['rol'],
         "OperateurID": user['OperateurID'],
-        "UserID": user['UserID']
+        "UserID": user['UserID'],
     }), 200
 
 
@@ -416,34 +416,40 @@ def addOperator():
     hashed_password = generate_password_hash(password)
     
     if not NomOperator or not Email or not Username:
-        return jsonify({"error": "NomOperator, email, and username are required"}), 400
+        return jsonify({"error": "NomOperator, Email, and Username are required"}), 400
 
     conn = None
     try:
         conn = get_db()
         cursor = conn.cursor()
-        # Insert into operateur table
-        query = 'INSERT INTO operateur (Nom_operateur) VALUES (%s);'
-        cursor.execute(query, (NomOperator,))
-        conn.commit()
-        
-        OperateurID = cursor.lastrowid
-        
-        # Insert into users table
-        query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s, %s, %s)'
-        cursor.execute(query, (Username, Email, hashed_password, "admin", OperateurID))
-        
-        # Send email with plaintext password
-        email_sent = send_email('Your New Account', Email, f'Your password is: {password}')
-        if not email_sent:
+
+        # Start a transaction
+        conn.start_transaction()
+
+        try:
+            # Insert into operateur table
+            query = 'INSERT INTO operateur (Nom_operateur) VALUES (%s);'
+            cursor.execute(query, (NomOperator,))
+            OperateurID = cursor.lastrowid
+
+            # Insert into users table
+            query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s, %s, %s)'
+            cursor.execute(query, (Username, Email, hashed_password, "admin", OperateurID))
+
+            # Send email with plaintext password
+            email_sent = send_email('Your New Account', Email, f'Your password is: {password}')
+            if not email_sent:
+                raise Exception("Failed to send email")
+
+            # Commit the transaction if everything is successful
+            conn.commit()
+
+        except Exception as e:
+            # Rollback the transaction if any exception occurs
             conn.rollback()
-            return jsonify({"error": "Failed to send email"}), 500
-        
-        conn.commit()
+            return jsonify({"error": str(e)}), 500
     
     except Exception as e:
-        if conn:
-            conn.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
         if conn:
