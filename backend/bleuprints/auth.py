@@ -84,7 +84,7 @@ def create_user():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s, "moderator", %s)'
+        query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s, "user", %s)'
         cursor.execute(query, (username, email, hashed_password, operateur_id))
         if send_email('Your New Account', email, f'Your password is: {password}'):
             conn.commit()
@@ -112,7 +112,7 @@ def create_userARH():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        query = 'INSERT INTO users (username, email, pas, rol) VALUES (%s, %s, %s, "moderator")'
+        query = 'INSERT INTO users (username, email, pas, rol) VALUES (%s, %s, %s, "user")'
         cursor.execute(query, (username, email, hashed_password))
         if send_email('Your New Account', email, f'Your password is: {password}'):
             conn.commit()
@@ -140,7 +140,7 @@ def get_mod():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        query = 'SELECT statut, username, email FROM users WHERE OperateurID=%s AND rol="moderator"'
+        query = 'SELECT statut, username, email FROM users WHERE OperateurID=%s AND rol="user"'
         cursor.execute(query, (operateur_id,))
         results = cursor.fetchall()
         conn.commit()
@@ -174,7 +174,7 @@ def get_modARH():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        query = "SELECT statut, username, email FROM users WHERE users.OperateurID IS NULL AND users.rol = 'moderator';"
+        query = "SELECT statut, username, email FROM users WHERE users.OperateurID IS NULL AND users.rol = 'user';"
         cursor.execute(query)
         results = cursor.fetchall()
         conn.commit()
@@ -235,6 +235,7 @@ def create_adminOp():
     email = data.get('email')
     operator_id = data.get('OperateurID')
     password = generate_random_password()
+    print(password)
     hashed_password = generate_password_hash(password)
     conn = None
     try:
@@ -242,7 +243,6 @@ def create_adminOp():
         cursor = conn.cursor()
         query = 'INSERT INTO users (username, email, pas, rol, OperateurID) VALUES (%s, %s, %s, "admin", %s)'
         cursor.execute(query, (username, email, hashed_password, operator_id))
-        # Commit after ensuring email is sent
         if send_email('Your New Account', email, f'Your password is: {password}'):
             conn.commit()
         else:

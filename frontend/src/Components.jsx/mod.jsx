@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router";
 import Modal from "./Modal";
 import AddMod from "./addMod";
+import ConfirmDialog from "./ConfirmDialog";
 
 export default function Mod() {
   const { OperateurID } = useParams();
@@ -11,6 +12,15 @@ export default function Mod() {
   const [error, setError] = useState("");
   const [showAddMod, setShowAddMod] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false); // State for dropdown visibility
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const getMod = async () => {
     try {
@@ -53,7 +63,7 @@ export default function Mod() {
       await axios.post("http://127.0.0.1:5000/users/activate_account", {
         emails: selectedUsers,
       });
-      alert("Selected accounts activated successfully");
+
       getMod();
     } catch (error) {
       console.error("Error activating accounts:", error);
@@ -65,7 +75,7 @@ export default function Mod() {
       await axios.post("http://127.0.0.1:5000/users/deactivate_account", {
         emails: selectedUsers,
       });
-      alert("Selected accounts deactivated successfully");
+
       getMod();
     } catch (error) {
       console.error("Error deactivating accounts:", error);
@@ -74,11 +84,12 @@ export default function Mod() {
 
   const deleteAccounts = async () => {
     try {
+      console.log(selectedUsers);
       await axios.post("http://127.0.0.1:5000/users/delete_account", {
         emails: selectedUsers,
       });
-      alert("Selected accounts deleted successfully");
       getMod();
+      handleClose();
     } catch (error) {
       console.error("Error deleting accounts:", error);
     }
@@ -180,7 +191,7 @@ export default function Mod() {
             </ul>
             <div className="py-1">
               <button
-                onClick={deleteAccounts}
+                onClick={handleOpen}
                 className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white w-full text-left"
               >
                 Supprimer un compte
@@ -268,6 +279,13 @@ export default function Mod() {
       <Modal show={showAddMod} onClose={() => setShowAddMod(false)}>
         <AddMod onSuccess={handleAddModSuccess} />
       </Modal>
+      <ConfirmDialog
+        open={open}
+        onClose={handleClose}
+        onConfirm={deleteAccounts}
+        title="Confirmation de suppression"
+        description="Êtes-vous sûr(e) de vouloir supprimer les comptes sélectionnés?"
+      />
     </div>
   );
 }
