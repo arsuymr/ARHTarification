@@ -210,10 +210,10 @@ const Tableau = ({ IDClasse, CCID, onAllInputsFilledChange }) => {
 
   return (
     <TableContainer component={Paper}>
-      <Table size="small" aria-label="a dense table">
+      <Table size="large" aria-label="a dense table">
         <TableHead>
           <TableRow>
-            <TableCell>Année </TableCell>
+            <TableCell className="w-1/5">Année </TableCell>
             {years.map((year) => (
               <TableCell key={year} align="center">
                 {year}

@@ -26,6 +26,8 @@ def get_classe():
     except mysql.connector.Error as e:
         return jsonify({'error': str(e)}), 500
     finally:
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
 
@@ -93,6 +95,8 @@ def insert_data():
             conn.rollback()
         return jsonify({'error': str(e)}), 500
     finally:
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
 
@@ -147,18 +151,20 @@ def get_all():
     except mysql.connector.Error as e:
         return jsonify({'error': str(e)}), 500
     finally:
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
 
 @saisit_bp.route('/get_all_valide', methods=['GET'])
 def get_all_valide():
-    conn = None
     try:
         CCID = request.args.get('CCID', None)
         IDClasse = request.args.get('IDClasse', None)
         AnneePrevision = request.args.get('AnneePrevision', None)
         UnityID = request.args.get('UnityID', None)
         CodeSR = request.args.get('CodeSR', None)
+        AnneeActuelle = request.args.get('AnneeActuelle', None)
 
         # Vérification des paramètres obligatoires
         if None in [IDClasse, AnneePrevision, UnityID, CodeSR, CCID]:
@@ -177,10 +183,11 @@ def get_all_valide():
         usine_result = cursor.fetchone()
         
         if not usine_result:
-            return jsonify({'message': 'No usine found for the given UnityID'}), 404
+            return jsonify({'message': 'No usine found for the given UnityID','valide':False}), 404
         
         UsineID = usine_result['UsineID']
 
+        # Check if ControleCout is valid for the year
         recent_cc_query = """
                 SELECT valide
                 FROM ControleCout
@@ -188,14 +195,9 @@ def get_all_valide():
             """
         cursor.execute(recent_cc_query, (UnityID, AnneeActuelle))
         recent_cc_result = cursor.fetchone()
-        recent_cc_result = recent_cc_result["valide"]
 
-        if not recent_cc_result or not recent_cc_result['valide']:
-                # Si une unité n'est pas valide, renvoyer un message d'erreur
-                cursor.close()
-                conn.close()
-                return jsonify({'message': 'le Controle cout is not valid for the year {AnneeActuelle}'}), 400
-
+        if not recent_cc_result or recent_cc_result["valide"]==0 :
+            return jsonify({'message': f'le Controle cout is not valid for the year {AnneeActuelle}','valide':False}), 400
 
         # Récupérer toutes les saisies pour le contrôle de coût le plus récent avec UsineID
         saisit_query = """
@@ -210,13 +212,15 @@ def get_all_valide():
         cursor.execute(saisit_query, (CCID, AnneePrevision, UnityID, IDClasse, CodeSR, UsineID))
         results = cursor.fetchall()
         if results:
-            return jsonify({ 'data': results}), 200
+            return jsonify({ 'data': results,'valide':True}), 200
         else:
-            return jsonify({'message': 'No data found for the most recent control'}), 200
+            return jsonify({'message': 'No data found for the control','valide':False}), 200
 
     except mysql.connector.Error as e:
         return jsonify({'error': str(e)}), 500
     finally:
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
 
@@ -241,6 +245,8 @@ def get_SR():
     except mysql.connector.Error as e:
         return jsonify({'error': str(e)}), 500
     finally:
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
 
@@ -286,8 +292,9 @@ def create_CC():
         return jsonify({'error': str(e)}), 500
 
     finally:
-        if conn:
+        if cursor:
             cursor.close()
+        if conn:
             conn.close()
 
 @saisit_bp.route('/valides_CC', methods=['POST'])
@@ -319,6 +326,8 @@ def valider_CC():
     except mysql.connector.Error as e:
         return jsonify({'error': str(e)}), 500
     finally:
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
 
@@ -376,6 +385,8 @@ def get_recent_CC():
     except mysql.connector.Error as e:
         return jsonify({'error': str(e)}), 500
     finally:
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
 
@@ -420,6 +431,8 @@ def get_CC():
     except mysql.connector.Error as e:
         return jsonify({'error': str(e)}), 500
     finally:
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
 

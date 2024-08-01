@@ -92,7 +92,7 @@ export default function ParamsTable() {
   }
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between ">
       <SideBarOp OperateurID={OperateurID} />
       <div className="w-full h-full mx-6 mt-15">
         <Tabs />

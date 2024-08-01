@@ -117,38 +117,35 @@ export default function TableauComplet() {
   return (
     <div className="flex">
       <SideBarOp OperateurID={OperateurID} />
-      <div className="flex flex-col">
+      <div className="flex flex-col w-full mx-6 mt-15">
         <Tabs />
         {!controleCout || controleCout.valide ? (
-          <div className="flex justify-center m-7">
-            <h3 className="w-full font-bold ">Créer un nouveau Controle de Coût</h3>
+          <div className="flex justify-center m-7 justify-items-center">
+            <h3 className="w-fit font-bold max-xl:text-2xl flex flex-col justify-center mr-4">Créer un nouveau Controle de Coût</h3>
             <TextField
               label="Année du Nouveau controle cout"
               value={newControl.AnneeActuelle}
               onChange={(e) => setNewControl({ ...newControl, AnneeActuelle: e.target.value })}
-              className="w-full "
+              className="w-1/4  justify-center"
             />
             <TextField
               label="Nombre d'années de Previsions"
               value={newControl.Prevision}
               onChange={(e) => setNewControl({ ...newControl, Prevision: e.target.value })}
-              fullWidth
               type="number"
-              className=""
+              className="w-1/4 justify-center"
             />
-            <div className="flex p-4 justify-items-center">
-              <button onClick={handleOpen1} className="rounded bg-indigo-600 px-4 py-2  font-medium text-white hover:bg-indigo-700 w-24" >
+            <div className="flex m-4  justify-items-center">
+              <button onClick={handleOpen1} className="w-36 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" >
                 Créer
               </button>
             </div>
-
-
           </div>
         ) : null}
         <div className="mb-10">
           {classes.map((classe) => (
             <div key={classe.ID}>
-              <div className="font-semibold text-xl ml-3 mt-[40px] mb-[10px]">
+              <div className="font-semibold text-xl my-7">
                 {classe.NomClasse}
               </div>
               {classe && classe.ID && controleCout && controleCout.CCID && (
@@ -161,9 +158,9 @@ export default function TableauComplet() {
         {controleCout && (
           <div className="flex justify-center mb-10">
             {!controleCout.valide && (
-              <Button onClick={handleOpen2} variant="contained" className="bg-indigo-600" >
+              <button onClick={handleOpen2} className=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800s" >
                 Valider le Controle de Coût
-              </Button>
+              </button>
             )}
           </div>
         )}

@@ -14,6 +14,7 @@ import AccueilModOp from "./Pages/ModeratorOperator/AccueilModOp";
 import GestionModARH from "./Pages/AdminARH/GestionModARH";
 import GestionModOp from "./Pages/AdminOperator/GestionModOp";
 import DetailsOperator from "./Pages/AdminARH/DetailsOperator";
+import HistoriqueOp from "./Components.jsx/HistoriqueOperateur";
 function App() {
   return (
     <Router>
@@ -74,20 +75,28 @@ function App() {
           element={<Charts role="USER" />}
         />
         <Route
-          path="admin-arh/:UserID/DashBoard/Simulation_donnee"
+          path="/admin-arh/:UserID/DashBoard/Simulation_donnee"
           element={<SimulationPage role="ADMIN" />}
         />
         <Route
-          path="user-arh/:UserID/DashBoard/Simulation_donnee"
+          path="/user-arh/:UserID/DashBoard/Simulation_donnee"
           element={<SimulationPage role="USER" />}
         />
         <Route
-          path="admin-arh/:UserID/DashBoard/Historique"
+          path="/admin-arh/:UserID/DashBoard/Historique"
           element={<HistoriqueCC role="ADMIN" />}
         />
         <Route
-          path="user-arh/:UserID/DashBoard/Historique"
+          path="/user-arh/:UserID/DashBoard/Historique"
           element={<HistoriqueCC role="USER" />}
+        />
+        <Route
+          path="/admin-op/:UserID/:OperateurID/Historique"
+          element={<HistoriqueOp role="ADMIN" />}
+        />
+        <Route
+          path="/user-op/:UserID/:OperateurID/Historique"
+          element={<HistoriqueOp role="USER" />}
         />
       </Routes>
     </Router>

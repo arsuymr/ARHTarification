@@ -7,8 +7,9 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
+import { Alert, AlertTitle, Stack } from "@mui/material";
 
-const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator }) => {
+const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator, setErrorMessage }) => {
     const [data, setData] = useState([]);
     const [nomsSR, setNomsSR] = useState([]);
     const [years, setYears] = useState([]);
@@ -37,18 +38,16 @@ const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator }
                 params: {
                     UnityID: selectedUnit,
                     AnneeActuelle: selectedYear
-                }, // Use the actual selectedUnit here
+                },
             });
             const years = Response.data.years;
             const CCID = Response.data.CCID;
-            console.log("maaahadaaa", selectedUnit, CCID, years, IDClasse);
 
             if (!Array.isArray(years)) {
                 throw new Error('Years data is not an array');
             }
             setYears(years)
             if (IDClasse === 'TauxUtilisationID') {
-                console.log("hayaaadoka ", CCID, selectedOperator, selectedUnit, selectedYear)
 
                 const tauxResponse = await axios.post('http://127.0.0.1:5000/calcul/calculate_taux_utilisation', {
                     CCID: CCID,
@@ -57,9 +56,10 @@ const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator }
                     OperateurID: selectedOperator,
                     n: years.length
                 });
-                console.log("taux response ", tauxResponse, CCID, selectedOperator, selectedUnit, selectedYear)
                 setCodeSRs(["taux d'utilisation"])
-                setTauxUtilisation(tauxResponse.data)
+                console.log("yaaaaaaaa", tauxResponse.data.valeur.length)
+                if (tauxResponse.data.valeur.length > 0) setTauxUtilisation(tauxResponse.data.valeur)
+                else setTauxUtilisation([])
             } else {
 
                 const promises = codeSRs.map((codeSR) =>
@@ -73,12 +73,18 @@ const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator }
                                         AnneePrevision: year,
                                         UnityID: selectedUnit,
                                         CodeSR: codeSR,
+                                        AnneeActuelle: selectedYear
                                     },
                                 })
-                                .then((response) =>
-                                    response.data.data.length > 0 ? response.data.data[0].Valeur : "0.0"
-                                )
-                                .catch(() => "0.0")
+                                .then((response) => {
+                                    setErrorMessage(false)
+                                    return response.data.data.length > 0 ? response.data.data[0].Valeur : ""
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                    setErrorMessage(true)
+
+                                })
                         )
                     )
                 );
@@ -87,7 +93,9 @@ const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator }
             }
         } catch (error) {
             console.error("Error fetching data:", error);
-            return Array(codeSRs.length).fill(Array(19).fill("0.0"));
+            setErrorMessage(true)
+            setTauxUtilisation([])
+            return Array(codeSRs.length).fill(Array(0).fill(""));
         }
     };
 
@@ -105,49 +113,53 @@ const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator }
             }
         };
         fetchData();
-    }, [IDClasse, selectedYear, selectedUnit, selectedOperator]);
+    }, [IDClasse, selectedYear, selectedUnit, selectedOperator, setErrorMessage]);
 
     return (
-        <TableContainer component={Paper}>
-            <Table size="small" aria-label="a dense table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Année</TableCell>
-                        {years.map((year) => (
-                            <TableCell key={year} align="center">
-                                {year}
-                            </TableCell>
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {nomsSR.map((nomSR, rowIndex) => (
-                        <TableRow key={nomSR}>
-                            <TableCell component="th" scope="row">
-                                {nomSR}
-                            </TableCell>
-                            {data[rowIndex] &&
-                                data[rowIndex].map((value, colIndex) => (
-                                    <TableCell key={colIndex} align="center">
-                                        {value}
-                                    </TableCell>
-                                ))}
-                        </TableRow>
-                    ))}
-                </TableBody>
-
-                {IDClasse === 'TauxUtilisationID' && (
-                    <TableBody>
+        <div>
+            <TableContainer component={Paper}>
+                <Table size="small" aria-label="a dense table">
+                    <TableHead>
                         <TableRow>
-                            <TableCell>Taux d'Utilisation</TableCell>
-                            {tauxUtilisation.map((taux, index) => (
-                                <TableCell key={index}>{taux}</TableCell>
+                            <TableCell>Année</TableCell>
+                            {years.map((year) => (
+                                <TableCell key={year} align="center">
+                                    {year}
+                                </TableCell>
                             ))}
                         </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {nomsSR.map((nomSR, rowIndex) => (
+                            <TableRow key={nomSR}>
+                                <TableCell component="th" scope="row">
+                                    {nomSR}
+                                </TableCell>
+                                {data[rowIndex] &&
+                                    data[rowIndex].map((value, colIndex) => (
+                                        <TableCell key={colIndex} align="center">
+                                            {value}
+                                        </TableCell>
+                                    ))}
+                            </TableRow>
+                        ))}
                     </TableBody>
-                )}
-            </Table>
-        </TableContainer>
+
+                    {IDClasse === 'TauxUtilisationID' && (
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>Taux d'Utilisation</TableCell>
+                                {tauxUtilisation.map((taux, index) => (
+                                    <TableCell key={index}>{taux}</TableCell>
+                                ))}
+                            </TableRow>
+                        </TableBody>
+                    )}
+                </Table>
+            </TableContainer>
+        </div >
+
+
     );
 };
 

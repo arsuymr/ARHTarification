@@ -11,10 +11,10 @@ export default function Charts({ role }) {
   const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
   const [data4, setData4] = useState([]);
-  const [anneeDebut, setAnneeDebut] = useState(2024);
+  const [anneeDebut, setAnneeDebut] = useState(new Date().getFullYear());
   const [operateurNom, setOperateurNom] = useState("");
   const [operators, setOperators] = useState([]);
-  const [Limit, setLimit] = useState(20);
+  const [Limit, setLimit] = useState(5);
   const [Type, setType] = useState("Tarifs");
   const [unities, setUnities] = useState([]);
   const [nomUnity, setNomUnity] = useState("");
@@ -114,53 +114,54 @@ export default function Charts({ role }) {
   };
   console.log(role);
   return (
-    <div className="flex">
+    <div className="flex ">
       <SideBarARH Role={role} />
-      <div className="m-2 w-[2560px]  ">
-        <div className="p-4 pt-2">
+      <div className="m-2 w-screen ">
+        <div className="p-4 pt-2 w-full">
           <TabDashboard role={role} />
         </div>
-        <h1 className="text-2xl m-4"> Representation Graphique</h1>
-        <div className="flex  gap-4 justify-center  items-center  mb-14 ">
-          <select
-            value={operateurNom}
-            onChange={(e) => setOperateurNom(e.target.value)}
-            className="p-1 border-b border-blue-300  m-2"
-          >
-            {operators.map((operator) => (
-              <option key={operator.OperateurID} value={operator.Nom_operateur}>
-                {operator.Nom_operateur}
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            placeholder="Année Début"
-            value={anneeDebut}
-            onChange={(e) => setAnneeDebut(e.target.value)}
-            className="p-1 border-b border-blue-300  m-2"
-          />
-          <input
-            type="number"
-            placeholder="Limite"
-            value={Limit}
-            onChange={(e) => setLimit(e.target.value)}
-            className="p-1 border-b border-blue-300  m-2"
-          />
-          <select
-            value={Type}
-            onChange={(e) => setType(e.target.value)}
-            className="p-1 border-b border-blue-300  m-2"
-          >
-            <option value="Tarifs">Tarifs</option>
-            <option value="CREU">Creu</option>
-          </select>
-          {Type === "CREU" && (
-            <div>
+        <h1 className=" m-4 text-2xl font-extrabold  text-gradient"> Representation Graphique</h1>
+        <div className="flex justify-start gap-20 my-10 ">
+          <div className="flex flex-col gap-4  items-center  ml-10 mt-6">
+            <select
+              value={operateurNom}
+              onChange={(e) => setOperateurNom(e.target.value)}
+              className="p-1 border-b border-blue-700 m-2 w-full"
+            >
+              {operators.map((operator) => (
+                <option key={operator.OperateurID} value={operator.Nom_operateur}>
+                  {operator.Nom_operateur}
+                </option>
+              ))}
+            </select>
+            <input
+              type="number"
+              placeholder="Année Début"
+              value={anneeDebut}
+              onChange={(e) => setAnneeDebut(e.target.value)}
+              className="p-1 border-b border-blue-700  m-2 w-full"
+            />
+            <input
+              type="number"
+              placeholder="Limite"
+              value={Limit}
+              onChange={(e) => setLimit(e.target.value)}
+              className="p-1 border-b border-blue-700  m-2 w-full"
+            />
+            <select
+              value={Type}
+              onChange={(e) => setType(e.target.value)}
+              className="p-1 border-b border-blue-700  m-2 w-full"
+            >
+              <option value="Tarifs">Tarifs</option>
+              <option value="CREU">Creu</option>
+            </select>
+            {Type === "CREU" && (
+
               <select
                 value={nomUnity}
                 onChange={(e) => setNomUnity(e.target.value)}
-                className="p-1 border-b border-blue-300  m-2"
+                className="p-1 border-b border-blue-700  m-2 w-full"
               >
                 <option value="">Select Unity</option>
                 {unities.map((unity, index) => (
@@ -169,177 +170,182 @@ export default function Charts({ role }) {
                   </option>
                 ))}
               </select>
-            </div>
-          )}
-        </div>
-        <div className="flex gap-5 justify-center ">
-          {Type === "Tarifs" && (
-            <>
-              <div className="flex">
-                <LineChart
-                  width={500}
-                  height={300}
-                  series={[
-                    {
-                      data: data1,
-                      yAxisKey: "leftAxisId",
-                      color: "black",
-                      label: "Tarifs Liquifaction  [DA/1000 Sm3]",
-                    },
-                  ]}
-                  xAxis={[{ scaleType: "point", data: xLabels }]}
-                  yAxis={[
-                    {
-                      id: "leftAxisId",
-                      min:
-                        Math.min(...data1) > 0
-                          ? Math.min(...data1) - 0.1 * Math.min(...data1)
-                          : 0,
-                      max: Math.max(...data1) + 0.1 * Math.max(...data1),
-                    },
-                  ]}
-                  tooltip={{
-                    trigger: "axis",
-                    formatter: sharedTooltip,
-                    backgroundColor: "#fff",
-                    borderColor: "#ddd",
-                    borderWidth: 1,
-                    padding: 10,
-                  }}
-                />
-              </div>
-              <div className="flex">
-                <LineChart
-                  width={500}
-                  height={300}
-                  series={[
-                    {
-                      data: data2,
-                      label: "Tarif Separation  [DA/1000 Tonne]",
-                      yAxisKey: "leftAxisId",
-                      color: "#114021",
-                    },
-                  ]}
-                  xAxis={[{ scaleType: "point", data: xLabels }]}
-                  yAxis={[
-                    {
-                      id: "leftAxisId",
-                      min:
-                        Math.min(...data2) > 0
-                          ? Math.min(...data2) - 0.1 * Math.min(...data2)
-                          : 0,
-                      max: Math.max(...data2) + 0.1 * Math.max(...data2),
-                    },
-                  ]}
-                  tooltip={{
-                    enabled: true,
-                    trigger: "axis",
-                    formatter: sharedTooltip,
-                    backgroundColor: "#fff",
-                    borderColor: "#ddd",
-                    borderWidth: 1,
-                    padding: 10,
-                  }}
-                />
-              </div>
-            </>
-          )}
-          {Type === "CREU" && (
-            <>
-              <div className="flex-1">
-                <LineChart
-                  width={500}
-                  height={300}
-                  series={[
-                    {
-                      data: data1,
-                      label: "Creu de Liquifaction Par Tonne",
-                      yAxisKey: "leftAxisId",
-                    },
-                    {
-                      data: data2,
-                      label: "Creu Liquifaction Par Sm3",
-                      yAxisKey: "leftAxisId",
-                    },
-                  ]}
-                  xAxis={[{ scaleType: "point", data: xLabels }]}
-                  yAxis={[
-                    {
-                      id: "leftAxisId",
-                      min:
-                        Math.min(...data1) > 0
-                          ? Math.min(...data1) - 0.1 * Math.min(...data1)
-                          : 0,
-                      max: Math.max(...data1) + 0.1 * Math.max(...data1),
-                    },
-                    {
-                      id: "rightAxisId",
-                      min:
-                        Math.min(...data2) > 0
-                          ? Math.min(...data2) - 0.1 * Math.min(...data2)
-                          : 0,
-                      max: Math.max(...data2) + 0.1 * Math.max(...data2),
-                    },
-                  ]}
-                  tooltip={{
-                    enabled: true,
-                    trigger: "axis",
-                    formatter: sharedTooltip,
-                    backgroundColor: "#fff",
-                    borderColor: "#ddd",
-                    borderWidth: 1,
-                    padding: 10,
-                  }}
-                />
-              </div>
-              <div className="flex-1">
-                <LineChart
-                  width={500}
-                  height={300}
-                  series={[
-                    {
-                      data: data3,
-                      label: "Creu Separation Par tonne",
-                      yAxisKey: "leftAxisId",
-                    },
-                    {
-                      data: data4,
-                      label: "Creu Separation Par Sm3",
-                      yAxisKey: "leftAxisId",
-                    },
-                  ]}
-                  xAxis={[{ scaleType: "point", data: xLabels }]}
-                  yAxis={[
-                    {
-                      id: "leftAxisId",
-                      min:
-                        Math.min(...data3) > 0
-                          ? Math.min(...data3) - 0.1 * Math.min(...data3)
-                          : 0,
-                      max: Math.max(...data3) + 0.1 * Math.max(...data3),
-                    },
-                    {
-                      id: "rightAxisId",
-                      min:
-                        Math.min(...data4) > 0
-                          ? Math.min(...data4) - 0.1 * Math.min(...data4)
-                          : 0,
-                      max: Math.max(...data4) + 0.1 * Math.max(...data4),
-                    },
-                  ]}
-                  tooltip={{
-                    enabled: true,
-                    trigger: "axis",
-                    formatter: sharedTooltip,
-                    backgroundColor: "#fff",
-                    borderColor: "#ddd",
-                    borderWidth: 1,
-                    padding: 10,
-                  }}
-                />
-              </div>
-            </>
-          )}
+
+            )}
+          </div>
+          <div className="flex flex-col gap-5 justify-center ">
+            {Type === "Tarifs" && (
+              <>
+                <div className="flex">
+                  <LineChart
+                    width={700}
+                    height={300}
+                    series={[
+                      {
+                        data: data1,
+                        yAxisKey: "leftAxisId",
+                        color: "green",
+                        label: "Tarifs Liquifaction  [DA/1000 Sm3]",
+                      },
+                    ]}
+                    xAxis={[{ scaleType: "point", data: xLabels }]}
+                    yAxis={[
+                      {
+                        id: "leftAxisId",
+                        min:
+                          Math.min(...data1) > 0
+                            ? Math.min(...data1) - 0.1 * Math.min(...data1)
+                            : 0,
+                        max: Math.max(...data1) + 0.1 * Math.max(...data1),
+                      },
+                    ]}
+                    tooltip={{
+                      trigger: "axis",
+                      formatter: sharedTooltip,
+                      backgroundColor: "#fff",
+                      borderColor: "#ddd",
+                      borderWidth: 1,
+                      padding: 10,
+                    }}
+                  />
+                </div>
+                <div className="flex">
+                  <LineChart
+                    width={700}
+                    height={300}
+                    series={[
+                      {
+                        data: data2,
+                        label: "Tarif Separation  [DA/1000 Tonne]",
+                        yAxisKey: "leftAxisId",
+                        color: "blue",
+                      },
+                    ]}
+                    xAxis={[{ scaleType: "point", data: xLabels }]}
+                    yAxis={[
+                      {
+                        id: "leftAxisId",
+                        min:
+                          Math.min(...data2) > 0
+                            ? Math.min(...data2) - 0.1 * Math.min(...data2)
+                            : 0,
+                        max: Math.max(...data2) + 0.1 * Math.max(...data2),
+                      },
+                    ]}
+                    tooltip={{
+                      enabled: true,
+                      trigger: "axis",
+                      formatter: sharedTooltip,
+                      backgroundColor: "#fff",
+                      borderColor: "#ddd",
+                      borderWidth: 1,
+                      padding: 10,
+                    }}
+                  />
+                </div>
+              </>
+            )}
+            {Type === "CREU" && (
+              <>
+                <div className="flex-1">
+                  <LineChart
+                    width={700}
+                    height={300}
+                    series={[
+                      {
+                        data: data1,
+                        label: "Creu de Liquifaction Par Tonne",
+                        yAxisKey: "leftAxisId",
+                        color: "blue"
+                      },
+                      {
+                        data: data2,
+                        label: "Creu Liquifaction Par Sm3",
+                        yAxisKey: "leftAxisId",
+                        color: "green"
+                      },
+                    ]}
+                    xAxis={[{ scaleType: "point", data: xLabels }]}
+                    yAxis={[
+                      {
+                        id: "leftAxisId",
+                        min:
+                          Math.min(...data1) > 0
+                            ? Math.min(...data1) - 0.1 * Math.min(...data1)
+                            : 0,
+                        max: Math.max(...data1) + 0.1 * Math.max(...data1),
+                      },
+                      {
+                        id: "rightAxisId",
+                        min:
+                          Math.min(...data2) > 0
+                            ? Math.min(...data2) - 0.1 * Math.min(...data2)
+                            : 0,
+                        max: Math.max(...data2) + 0.1 * Math.max(...data2),
+                      },
+                    ]}
+                    tooltip={{
+                      enabled: true,
+                      trigger: "axis",
+                      formatter: sharedTooltip,
+                      backgroundColor: "#fff",
+                      borderColor: "#ddd",
+                      borderWidth: 1,
+                      padding: 10,
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <LineChart
+                    width={700}
+                    height={300}
+                    series={[
+                      {
+                        data: data3,
+                        label: "Creu Separation Par tonne",
+                        yAxisKey: "leftAxisId",
+                        color: "blue"
+                      },
+                      {
+                        data: data4,
+                        label: "Creu Separation Par Sm3",
+                        yAxisKey: "leftAxisId",
+                        color: "green"
+                      },
+                    ]}
+                    xAxis={[{ scaleType: "point", data: xLabels }]}
+                    yAxis={[
+                      {
+                        id: "leftAxisId",
+                        min:
+                          Math.min(...data3) > 0
+                            ? Math.min(...data3) - 0.1 * Math.min(...data3)
+                            : 0,
+                        max: Math.max(...data3) + 0.1 * Math.max(...data3),
+                      },
+                      {
+                        id: "rightAxisId",
+                        min:
+                          Math.min(...data4) > 0
+                            ? Math.min(...data4) - 0.1 * Math.min(...data4)
+                            : 0,
+                        max: Math.max(...data4) + 0.1 * Math.max(...data4),
+                      },
+                    ]}
+                    tooltip={{
+                      enabled: true,
+                      trigger: "axis",
+                      formatter: sharedTooltip,
+                      backgroundColor: "#fff",
+                      borderColor: "#ddd",
+                      borderWidth: 1,
+                      padding: 10,
+                    }}
+                  />
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -17,32 +17,51 @@ def calculate_taux_utilisation():
     OperateurID = data.get('OperateurID')
     n = data.get('n')
 
-    conn = get_db()
-    cursor= conn.cursor(dictionary=True)
-    query="""
-    SELECT UsineID FROM Unity WHERE  UnityID = %s
-    """
-    cursor.execute(query, (UnityID,))
-    result = cursor.fetchone()
-    UsineID = result['UsineID']
-    recent_cc_query = """
-                SELECT valide
-                FROM ControleCout
-                WHERE UnityID = %s AND AnneeActuelle = %s
-            """
-    cursor.execute(recent_cc_query, (UnityID, AnneeActuelle))
-    recent_cc_result = cursor.fetchone()
-    recent_cc_result = recent_cc_result["valide"]
-
-    if not recent_cc_result or not recent_cc_result['valide']:
-            # Si une unité n'est pas valide, renvoyer un message d'erreur
-                cursor.close()
-                conn.close()
-                return jsonify({'message': 'le Controle cout is not valid for the year {AnneeActuelle}'}), 400
-
-    taux_utilisation = calcul_Taux_Utilisation(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, n)
-
-    return jsonify(taux_utilisation), 200 
+    conn = None
+    cursor = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Récupération de UsineID
+        query = "SELECT UsineID FROM Unity WHERE UnityID = %s"
+        cursor.execute(query, (UnityID,))
+        result = cursor.fetchone()
+        UsineID = result['UsineID']
+        
+        # Vérification de la validité du ControleCout
+        recent_cc_query = """
+            SELECT valide
+            FROM ControleCout
+            WHERE UnityID = %s AND AnneeActuelle = %s
+        """
+        cursor.execute(recent_cc_query, (UnityID, AnneeActuelle))
+        recent_cc_result = cursor.fetchone()
+        
+        if recent_cc_result is None:
+            return jsonify({'message': f'Controle cout not found for the year {AnneeActuelle}'}), 404
+        
+        recent_cc_valid = recent_cc_result["valide"]
+        
+        if recent_cc_valid == 0:
+            # Si le ControleCout n'est pas valide, renvoyer un message d'erreur
+            return jsonify({'message': f'Le Controle cout n\'est pas valide pour l\'année {AnneeActuelle}'}), 400
+        
+        # Calcul du taux d'utilisation
+        taux_utilisation = calcul_Taux_Utilisation(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, n)
+        
+        return jsonify({"valeur":taux_utilisation}), 200
+    
+    except mysql.connector.Error as e:
+        # Gestion des erreurs de connexion à la base de données
+        return jsonify({'message': f'Erreur de base de données : {str(e)}'}), 500
+    
+    finally:
+        # Assurez-vous que le curseur et la connexion sont fermés
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 

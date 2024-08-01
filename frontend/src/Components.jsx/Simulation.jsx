@@ -17,6 +17,9 @@ import {
   TableContainer,
   Table,
   Paper,
+  Stack,
+  Alert,
+  AlertTitle,
 } from "@mui/material";
 import TabDashboard from "./TabDashboard";
 import ConfirmDialog from "./ConfirmDialog";
@@ -32,6 +35,8 @@ export default function SimulationPage({ role }) {
   const [tarifS, setTarifS] = useState(0);
   const [tarifL, setTarifL] = useState(0);
   const [resultData, setResultData] = useState({});
+  const [ErrorMessage, setErrorMessage] = useState(false);
+
 
   const [open, setOpen] = useState(false);
 
@@ -80,12 +85,12 @@ export default function SimulationPage({ role }) {
             },
           }
         );
-        console.log(response.data);
         setTarifS(response.data.tarif_S); // Adjust based on response structure
         setTarifL(response.data.tarif_L);
         setResultData(response.data.Resultat); // Adjust based on response structure
       }
     } catch (error) {
+      setErrorMessage(true)
       console.error("Error updating parameters and fetching data:", error);
     }
   };
@@ -125,12 +130,14 @@ export default function SimulationPage({ role }) {
   return (
     <div className="flex">
       <SideBarARH Role={role} />
-      <Box sx={{ padding: 4, paddingTop: 2 }}>
-        <TabDashboard role={role} />
-        <h4 variant="h4" className="text-xl mt-4  ">
-          Simulation De L'annee {new Date().getFullYear()} :
+      <div className="m-2 w-screen">
+        <div className="p-4 pt-2 w-full">
+          <TabDashboard role={role} />
+        </div>
+        <h4 variant="h4" className="  m-4 text-2xl font-extrabold  text-gradient ">
+          Simulation Pour L'annee {new Date().getFullYear()}
         </h4>
-        <Grid container spacing={4} className="flex justify-center">
+        <Grid container spacing={4} className="flex justify-center w-fit mx-10">
           <Grid item xs={12} md={8}>
             <Box sx={{ padding: 2, width: "100%" }} className="">
               <FormControl fullWidth>
@@ -178,9 +185,19 @@ export default function SimulationPage({ role }) {
                 </Box>
               ))}
             </Box>
-            <Button variant="contained" color="primary" onClick={fetchData}>
-              Simuler
-            </Button>
+            {ErrorMessage && (
+              <Stack sx={{ width: '100%', padding: '16px' }} spacing={2}>
+                <Alert severity="info">
+                  <AlertTitle>Alerte</AlertTitle>
+                  Aucune donnée disponible pour les filtres sélectionnés.
+                </Alert>
+              </Stack>)}
+            <div className="flex justify-end mx-5">
+              <button onClick={fetchData} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Simuler
+              </button>
+            </div>
+
           </Grid>
           <Grid item xs={12} md={4} className="grid place-items-center">
             <Box className="h-fit w-60 p-2 mb-3 mt-10 border rounded-lg border-blue-300 ">
@@ -236,14 +253,16 @@ export default function SimulationPage({ role }) {
           <Grid
             item
             xs={12}
-            sx={{ display: "flex", justifyContent: "center", marginTop: 4 }}
+            className="py-2 flex justify-center"
           >
-            <Button variant="contained" color="primary" onClick={handleOpen}>
-              Valider Simulation
-            </Button>
+
+
+            <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onClick={handleOpen}>
+              Enregistrer Donnees Simulation
+            </button>
           </Grid>
         </Grid>
-      </Box>
+      </div>
       <ConfirmDialog
         open={open}
         onClose={handleClose}
