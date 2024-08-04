@@ -82,7 +82,7 @@ def Tarif_liquefaction_separation(OperateurID, AnneeActuelle):
             return jsonify({'error': 'Not found in usine table'}), 404
 
         sum_quantite_GA_L = 0
-        sum_quantite_GA_S = 0
+        somme_div_S= 0
         tarif_liquefaction = 0
         tarif_separation = 0
         creu_results = []
@@ -117,6 +117,27 @@ def Tarif_liquefaction_separation(OperateurID, AnneeActuelle):
                     else:
                         return jsonify({'error': 'Quantite Gaz Actualise doit etre entrer sinon c est la division par 0'}), 404
                     
+                    query = """SELECT Valeur FROM Saisit WHERE UnityID = %s AND CCID = %s AND AnneeActuelle = %s AND UsineID = %s AND OperateurID = %s AND codeSR = 'PRP' AND IDClasse = '4'"""
+                    cursor.execute(query, (unite, CCID, AnneeActuelle, usineid, OperateurID))
+                    resultA = cursor.fetchall()
+                    PRP = []
+                    if resultA:
+                        for result in resultA:
+                            PRP.append(float(result['Valeur']))
+                    else:
+                        return jsonify({'error': 'les valeurs du propanes doivent etre entrer sinon c est la division par 0'}), 404
+                    
+
+                    query = """SELECT Valeur FROM Saisit WHERE UnityID = %s AND CCID = %s AND AnneeActuelle = %s AND UsineID = %s AND OperateurID = %s AND codeSR = 'BTN' AND IDClasse = '4'"""
+                    cursor.execute(query, (unite, CCID, AnneeActuelle, usineid, OperateurID))
+                    resultA = cursor.fetchall()
+                    BTN = []
+                    if resultA:
+                        for result in resultA:
+                            BTN.append(float(result['Valeur']))
+                    else:
+                        return jsonify({'error': 'les valeurs du Butane doivent etre entrer sinon c est la division par 0'}), 404
+                    
                     
                     print("\n\n\n Beraaaaa  Tyyyypeeeeeeeeeeee", typ,creu_results)
 
@@ -131,13 +152,19 @@ def Tarif_liquefaction_separation(OperateurID, AnneeActuelle):
                             "CREU_parTonne": creu[1],
                             "CREU_parsm3": creu[0],
                         })
-                        print("\n\n\nTyyyypeeeeeeeeeeee", typ,creu_results)
 
 
                     if typ in ["separation", "liquefaction et separation"]:
-                        sum_quantite_GA_S += sum(QGA)
+                        sum_S = 0
+                        if typ =="separation":
+                            sum_S = (sum(QGA) - QGA[0])*1000
+                        else:
+                            sum_S = sum(PRP) + sum(BTN) - PRP[0] - BTN[0]
+                            print(sum_S)
+
+                        somme_div_S +=sum_S
                         creu = CREU_Unity(CCID, AnneeActuelle, unite, usineid, OperateurID, typ, Nb_annee_prevision)
-                        tarif_separation += creu[1] * sum(QGA)
+                        tarif_separation += creu[1] * sum_S
                         creu_results.append({
                             "NomUnity": NomUnity,
                             "Type": "separation",
@@ -156,9 +183,9 @@ def Tarif_liquefaction_separation(OperateurID, AnneeActuelle):
                 "CREU_parTonne": item["CREU_parTonne"],
                 "CREU_parsm3": item["CREU_parsm3"]
             })
-
+        print("\n\n  Tarif liqui sepa ", tarif_liquefaction,tarif_separation)
         tarif_liquefaction = round(tarif_liquefaction / sum_quantite_GA_L, 2) if sum_quantite_GA_L else 0
-        tarif_separation = round(tarif_separation / sum_quantite_GA_S, 2) if sum_quantite_GA_S else 0
+        tarif_separation = round(tarif_separation / somme_div_S, 2) if somme_div_S else 0
 
         return jsonify({"tarif_L": tarif_liquefaction, "tarif_S": tarif_separation, "Resultat": resultat_grouped})
     
@@ -286,7 +313,6 @@ def calcul_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, 
     Resultat_Actualisee = [0] *n
 
     for i in range(n):
-        print("heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee 1 ",i,n,taux_utilisation)
         if Type == "separation":
             calcul_intermediere[i] = valeurs[param][i] * (valeurs['PRP'][i] + valeurs['BTN'][i]) / somme_production[i]
         else:
