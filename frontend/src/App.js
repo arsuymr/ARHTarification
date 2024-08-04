@@ -7,10 +7,7 @@ import Unites from "./Pages/Unites";
 import Charts from "./Components.jsx/chart";
 import SimulationPage from "./Components.jsx/Simulation";
 import HistoriqueCC from "./Components.jsx/HistoriqueCC";
-import AccueilARH from "./Pages/AdminARH/AccueilARH";
-import AccueilModARH from "./Pages/ModeratorARH/AccueilModARH";
 import AccueilOp from "./Pages/AdminOperator/AccueilOperator";
-import AccueilModOp from "./Pages/ModeratorOperator/AccueilModOp";
 import GestionModARH from "./Pages/AdminARH/GestionModARH";
 import GestionModOp from "./Pages/AdminOperator/GestionModOp";
 import DetailsOperator from "./Pages/AdminARH/DetailsOperator";
@@ -20,83 +17,104 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Auth />} />
+        {/** ADMIN OPERATEUR  */}
         <Route
           path="/admin-op/:UserID/:OperateurID"
           element={<AccueilOp role="ADMIN" />}
         />
-        <Route path="/admin-arh/:UserID/" element={<Charts role="ADMIN" />} />
         <Route
-          path="/admin-arh/:UserID/:OperateurID"
-          element={<DetailsOperator />}
+          path="/admin-op/:UserID/:OperateurID/:UsineID/:UnityID/tableau"
+          element={<TableauComplet role="ADMIN" />}
         />
         <Route
-          path="/admin-arh/:UserID/:OperateurID/:UsineID"
-          element={<Unites role="ADMINARH" />}
-        />
-        <Route path="/mod-arh/:UserID/" element={<AccueilModARH />} />
-        <Route
-          path="/mod-op/:UserID/:OperateurID"
-          element={<AccueilOp role="USER" />}
-        />
-        <Route
-          path="/admin-op/:UserID/:OperateurID/:UnityID/tableau"
-          element={<TableauComplet />}
-        />
-        <Route
-          path="/mod-op/:UserID/:OperateurID/:UnityID/tableau"
-          element={<TableauComplet />}
-        />
-        <Route
-          path="/admin-op/:UserID/:OperateurID/:UnityID/parametres-op"
-          element={<ParamsTable />}
-        />
-        <Route
-          path="/mod-op/:UserID/:OperateurID/:UnityID/parametres-op"
-          element={<ParamsTable />}
+          path="/admin-op/:UserID/:OperateurID/:UsineID/:UnityID/parametres-op"
+          element={<ParamsTable role="ADMIN" />}
         />
         <Route
           path="/admin-op/:UserID/:OperateurID/AjouterMod"
           element={<GestionModOp />}
         />
         <Route
-          path="/admin-arh/:UserID/moderateurs"
-          element={<GestionModARH />}
-        />
-        <Route
           path="/admin-op/:UserID/:OperateurID/:UsineID"
-          element={<Unites role="ADMINOP" />}
+          element={<Unites role="ADMIN" Interface="Op" />}
         />
         <Route
-          path="/admin-arh/:UserID/DashBoard/Graphical_visualisation"
-          element={<Charts role="ADMIN" />}
+          path="/admin-op/:UserID/:OperateurID/Historique"
+          element={<HistoriqueOp role="ADMIN" />}
+        />
+        {/** USER OPERATEUR  */}
+
+        <Route
+          path="/user-op/:UserID/:OperateurID/:UsineID/:UnityID/tableau"
+          element={<TableauComplet role="USER" />}
         />
         <Route
-          path="/user-arh/:UserID/DashBoard/Graphical_visualisation"
-          element={<Charts role="USER" />}
+          path="/user-op/:UserID/:OperateurID/Historique"
+          element={<HistoriqueOp role="USER" />}
         />
+        <Route
+          path="/user-op/:UserID/:OperateurID"
+          element={<AccueilOp role="USER" />}
+        />
+        <Route
+          path="/user-op/:UserID/:OperateurID/:UsineID/:UnityID/parametres-op"
+          element={<ParamsTable role="USER" />}
+        />
+        <Route
+          path="/user-op/:UserID/:OperateurID/:UsineID"
+          element={<Unites role="USER" Interface="Op" />}
+        />
+        {/** ADMIN ARH  */}
+        <Route path="/admin-arh/:UserID/" element={<Charts role="ADMIN" />} />
         <Route
           path="/admin-arh/:UserID/DashBoard/Simulation_donnee"
           element={<SimulationPage role="ADMIN" />}
-        />
-        <Route
-          path="/user-arh/:UserID/DashBoard/Simulation_donnee"
-          element={<SimulationPage role="USER" />}
         />
         <Route
           path="/admin-arh/:UserID/DashBoard/Historique"
           element={<HistoriqueCC role="ADMIN" />}
         />
         <Route
+          path="/admin-arh/:UserID/:OperateurID"
+          element={<DetailsOperator role="ADMIN" />}
+        />
+        <Route
+          path="/admin-arh/:UserID/:OperateurID/:UsineID"
+          element={<Unites role="ADMIN" Interface="ARH" />}
+        />
+        <Route
+          path="/admin-arh/:UserID/moderateurs"
+          element={<GestionModARH />}
+        />
+
+        <Route
+          path="/admin-arh/:UserID/DashBoard/Graphical_visualisation"
+          element={<Charts role="ADMIN" />}
+        />
+        {/** USER ARH  */}
+        <Route
+          path="/user-arh/:UserID/:OperateurID"
+          element={<DetailsOperator role="USER" />}
+        />
+
+        <Route
+          path="/user-arh/:UserID/DashBoard/Graphical_visualisation"
+          element={<Charts role="USER" />}
+        />
+
+        <Route path="/user-arh/:UserID/" element={<Charts role="USER" />} />
+        <Route
+          path="/user-arh/:UserID/DashBoard/Simulation_donnee"
+          element={<SimulationPage role="USER" />}
+        />
+
+        <Route
           path="/user-arh/:UserID/DashBoard/Historique"
           element={<HistoriqueCC role="USER" />}
         />
         <Route
-          path="/admin-op/:UserID/:OperateurID/Historique"
-          element={<HistoriqueOp role="ADMIN" />}
-        />
-        <Route
-          path="/user-op/:UserID/:OperateurID/Historique"
-          element={<HistoriqueOp role="USER" />}
+          path="/user-arh/:UserID/:OperateurID/:UsineID"
+          element={<Unites role="USER" Interface="ARH" />}
         />
       </Routes>
     </Router>

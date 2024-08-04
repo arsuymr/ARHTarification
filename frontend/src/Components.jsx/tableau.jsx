@@ -10,13 +10,20 @@ import axios from "axios";
 import { useParams } from "react-router";
 
 const Tableau = ({ IDClasse, CCID, onAllInputsFilledChange }) => {
-  const { UnityID, OperateurID } = useParams();
+  const { UnityID, OperateurID, UsineID } = useParams();
   const [data, setData] = useState([]);
   const [nomsSR, setNomsSR] = useState([]);
   const [codeSRs, setCodeSRs] = useState([]);
   const [years, setYears] = useState([]);
 
+  useEffect(() => {
+    // Simuler la récupération des données et vérifier si tous les inputs sont remplis
+    const allInputsFilled = checkIfAllInputsFilled();
+    onAllInputsFilledChange(IDClasse, allInputsFilled);
+  }, [data]);
+
   const checkIfAllInputsFilled = () => {
+    // Assurez-vous que la logique pour vérifier tous les inputs est correcte
     for (let row of data) {
       for (let cell of row) {
         if (cell === "") {
@@ -26,11 +33,6 @@ const Tableau = ({ IDClasse, CCID, onAllInputsFilledChange }) => {
     }
     return true;
   };
-
-  useEffect(() => {
-
-    onAllInputsFilledChange(checkIfAllInputsFilled());
-  }, [data, onAllInputsFilledChange]);
 
   const getSR = async (IDClasse) => {
     try {
@@ -77,11 +79,30 @@ const Tableau = ({ IDClasse, CCID, onAllInputsFilledChange }) => {
 
         if (type === 'liquefaction') {
           filteredCodeSRs = codeSRs.filter(sr => sr === 'GNL' || sr === 'GZL');
-        } else if (type === 'separation') {
+        }
+        if (type === 'separation') {
           filteredCodeSRs = codeSRs.filter(sr => sr === 'PRP' || sr === 'BTN');
         }
+        if (type === 'liquefaction et separation') {
+          filteredCodeSRs = codeSRs.filter(sr => sr === 'PRP' || sr === 'BTN' || sr === 'GNL' || sr === 'GZL');
+        }
+
       } else {
-        filteredCodeSRs = codeSRs;
+
+        if (IDClasse === 3) {
+          const type = responseCC.data?.Type;
+
+          if (!type) {
+            throw new Error('Type is not defined in responseSR');
+          }
+
+          if (type === 'liquefaction' || type === 'liquefaction et separation') {
+            filteredCodeSRs = codeSRs.filter(sr => sr === 'QGA' || sr === 'TAC');
+          }
+          if (type === 'separation') {
+            filteredCodeSRs = codeSRs.filter(sr => sr === 'QGNC' || sr === 'FCNS' || sr === 'QGA');
+          }
+        } else filteredCodeSRs = codeSRs;
       }
 
       filteredNomSRs = filteredCodeSRs.map(codeSR => {
@@ -98,17 +119,22 @@ const Tableau = ({ IDClasse, CCID, onAllInputsFilledChange }) => {
             axios
               .get("http://127.0.0.1:5000/saisit/get_all", {
                 params: {
+                  AnneeActuelle: years[0],
                   CCID: CCID,
                   IDClasse: IDClasse,
                   AnneePrevision: year,
                   UnityID: UnityID,
                   CodeSR: codeSR,
+                  OperateurID: OperateurID,
+                  UsineID: UsineID
                 },
               })
-              .then((response) =>
-                response.data.data.length > 0 ? response.data.data[0].Valeur : ""
-              )
-              .catch(() => "")
+              .then((response) => {
+                return response.data.data.length > 0 ? response.data.data[0].Valeur : ""
+              })
+              .catch((error) => {
+                return ""
+              })
           )
         )
       );
@@ -181,9 +207,8 @@ const Tableau = ({ IDClasse, CCID, onAllInputsFilledChange }) => {
     if (!isNaN(parsedValue)) {
       handleChange(rowIndex, colIndex, parsedValue.toString());
       // Replace with actual values or retrieve dynamically
-      const AnneeActuelle = new Date().getFullYear();
+      const AnneeActuelle = years[0]
       const AnneePrevision = years[colIndex];
-      console.log("cooocoo", colIndex, years)
       saisir(
         AnneeActuelle,
         AnneePrevision,
@@ -191,7 +216,7 @@ const Tableau = ({ IDClasse, CCID, onAllInputsFilledChange }) => {
         parsedValue.toString(),
         CCID,
         UnityID,
-        1,
+        UsineID,
         OperateurID,
         IDClasse
       );

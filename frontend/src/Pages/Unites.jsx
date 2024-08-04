@@ -5,7 +5,7 @@ import CardUnity from "../Components.jsx/carteUnite";
 import SideBarOp from "../Components.jsx/SideBarOp";
 import SideBarARH from "../Components.jsx/SideBarARH";
 
-export default function Unites({ role }) {
+export default function Unites({ role, Interface }) {
   const { UsineID } = useParams();
   const { OperateurID } = useParams();
   const [usines, setUsines] = useState([]);
@@ -29,12 +29,9 @@ export default function Unites({ role }) {
 
   return (
     <div className="flex">
-      {role === "ADMINARH" ? (
-        <SideBarARH Role="ADMIN" />
-      ) : (
-        <SideBarOp OperateurID={OperateurID} Role="ADMIN" />
-      )}
-      <div className="flex  gap-7 p-6">
+      {Interface === "Op" ?
+        <SideBarOp Role={role} /> : <SideBarARH Role={role} />}
+      <div className="flex flex-wrap w-full gap-7 p-6 ">
         {usines.length > 0 ? (
           usines.map((usine) => (
             <CardUnity

@@ -7,7 +7,7 @@ import Tabs from "./tabs";
 import { Button, TextField } from "@mui/material";
 import ConfirmDialog from "./ConfirmDialog";
 
-export default function TableauComplet() {
+export default function TableauComplet({ role }) {
 
   const { UnityID, OperateurID } = useParams();
   const [classes, setClasses] = useState([]);
@@ -21,9 +21,18 @@ export default function TableauComplet() {
   const [dialogInfo, setDialogInfo] = useState({ title: '', message: '', onConfirm: () => { } });
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
-  const handleAllInputsFilledChange = (allInputsFilled) => {
-    setIsButtonDisabled(!allInputsFilled);
+  const [allInputsFilledState, setAllInputsFilledState] = useState({});
+
+  const handleAllInputsFilledChange = (idClasse, isAllFilled) => {
+    setAllInputsFilledState((prevState) => ({
+      ...prevState,
+      [idClasse]: isAllFilled,
+    }));
+
+    setIsButtonDisabled(!Object.values(allInputsFilledState).every(Boolean));
   };
+
+
   const handleOpen1 = () => {
     setDialogInfo({
       title: 'Creation Controle de Cout pour une nouvelle année',
@@ -112,13 +121,13 @@ export default function TableauComplet() {
 
   useEffect(() => {
     fetchRecentControleCout();
-  }, [UnityID]);
+  }, []);
 
   return (
     <div className="flex">
-      <SideBarOp OperateurID={OperateurID} />
+      <SideBarOp Role={role} />
       <div className="flex flex-col w-full mx-6 mt-15">
-        <Tabs />
+        <Tabs role={role} />
         {!controleCout || controleCout.valide ? (
           <div className="flex justify-center m-7 justify-items-center">
             <h3 className="w-fit font-bold max-xl:text-2xl flex flex-col justify-center mr-4">Créer un nouveau Controle de Coût</h3>

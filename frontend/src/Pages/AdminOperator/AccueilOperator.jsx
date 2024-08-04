@@ -29,7 +29,7 @@ export default function AccueilOp({ role }) {
   };
 
   const handleCardClick = (usineId) => {
-    navigate(`/admin-op/${UserID}/${OperateurID}/${usineId}`);
+    role === "ADMIN" ? navigate(`/admin-op/${UserID}/${OperateurID}/${usineId}`) : navigate(`/user-op/${UserID}/${OperateurID}/${usineId}`)
   };
 
   const onDelet = () => {
@@ -38,26 +38,27 @@ export default function AccueilOp({ role }) {
   };
 
   return (
-    <div className="flex ">
-      <SideBarOp OperateurID={OperateurID} Role={role} />
-      {usines.length > 0 ? (
-        usines.map((usine) => (
-          <div className="flex flex-wrap gap-7 p-6">
+    <div className="flex">
+      <SideBarOp Role={role} />
+      <div className="flex flex-wrap gap-7 p-6 w-full">
+        {usines.length > 0 ? (
+          usines.map((usine) => (
             <Card
-              key={usine.id}
+              key={usine.UsineID}
               NomUsine={usine.NomUsine}
               Wilaya={usine.Wilaya}
               UsineID={usine.UsineID}
               onClick={() => handleCardClick(usine.UsineID)}
               onDelet={onDelet}
             />
-          </div>
-        ))
-      ) : (
-        <Stack className="w-full m-6 ">
-          <Alert severity="info">Aucune usine à afficher.</Alert>
-        </Stack>
-      )}
+          ))
+        ) : (
+          <Stack className="w-full m-6">
+            <Alert severity="info">Aucune usine à afficher.</Alert>
+          </Stack>
+        )}
+      </div>
     </div>
+
   );
 }

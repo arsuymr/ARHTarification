@@ -45,7 +45,7 @@ export default function HistoriqueOp({ role }) {
     };
     fetchUnits();
   }, []);
-
+  console.log(role)
   return (
     <div className="flex">
       <SideBarOp Role={role} />
@@ -76,7 +76,7 @@ export default function HistoriqueOp({ role }) {
         {ErrorMessage && (
           <Stack sx={{ width: "100%", padding: "16px" }} spacing={2}>
             <Alert severity="info">
-              <AlertTitle>Alerte</AlertTitle>
+              <AlertTitle>Info</AlertTitle>
               Aucune donnée disponible pour les filtres sélectionnés.
             </Alert>
           </Stack>

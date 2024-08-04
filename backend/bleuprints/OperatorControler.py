@@ -134,9 +134,19 @@ def add_unity():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        query = 'INSERT INTO unity (NomUnity, UsineID , typ) VALUES (%s,%s,%s)'
-        cursor.execute(query, (NomUnity,UsineID,typ))
+        insert_unity_query = 'INSERT INTO Unity (NomUnity, UsineID, typ) VALUES (%s, %s, %s)'
+        cursor.execute(insert_unity_query, (NomUnity, UsineID, typ))
         conn.commit()
+        
+        # Obtenir l'UnityID de l'unité nouvellement insérée
+        UnityID = cursor.lastrowid
+
+        # Insérer dans PrametreOperationel avec une capacité par défaut
+        insert_param_query = 'INSERT INTO PrametreOperationel (UnityID, codePO, valeur) VALUES (%s, %s, %s)'
+        cursor.execute(insert_param_query, (UnityID, "Capacite_design", 8))  # Valeur par défaut est 8
+        conn.commit()
+
+        return jsonify({'message': 'Unity and parameter inserted successfully'}), 201
     except Exception as e:
         if conn:
             conn.rollback()
@@ -144,8 +154,6 @@ def add_unity():
     finally:
         if conn:
             conn.close()
-
-    return jsonify({"message": "Usine created successfully"}), 201
 
 
 

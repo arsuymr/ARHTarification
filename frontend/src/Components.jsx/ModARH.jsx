@@ -154,9 +154,8 @@ export default function ModARH() {
           </button>
           <div
             id="dropdownAction"
-            className={`absolute z-10 ${
-              dropdownOpen ? "block" : "hidden"
-            } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}
+            className={`absolute z-10 ${dropdownOpen ? "block" : "hidden"
+              } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}
             style={{ top: "100%", right: 0 }}
           >
             <ul
@@ -255,9 +254,7 @@ export default function ModARH() {
                   <div className="text-base font-semibold">
                     {moderator.username}
                   </div>
-                  <div className="font-normal text-gray-500">
-                    {moderator.email}
-                  </div>
+
                 </div>
               </th>
               <td className="px-6 py-4">{moderator.email}</td>

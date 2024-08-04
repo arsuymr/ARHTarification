@@ -4,7 +4,7 @@ import Tabs from "./tabs";
 import { useParams } from "react-router";
 import SideBarOp from "./SideBarOp";
 
-export default function ParamsTable() {
+export default function ParamsTable({ role }) {
   const [params, setParams] = useState([]);
   const [paramNames, setParamNames] = useState([]);
   const [paramValues, setParamValues] = useState([]);
@@ -93,9 +93,9 @@ export default function ParamsTable() {
 
   return (
     <div className="flex justify-between ">
-      <SideBarOp OperateurID={OperateurID} />
+      <SideBarOp Role={role} />
       <div className="w-full h-full mx-6 mt-15">
-        <Tabs />
+        <Tabs role={role} />
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
             <thead className="ltr:text-left rtl:text-right">

@@ -1,15 +1,15 @@
 import React from "react";
 import { NavLink, useParams } from "react-router-dom";
 
-function Tabs() {
-  const { OperateurID, UnityID, UserID } = useParams();
+function Tabs({ role }) {
+  const { OperateurID, UnityID, UserID, UsineID } = useParams();
 
   return (
     <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
       <ul className="flex flex-wrap -mb-px">
         <li className="me-2">
           <NavLink
-            to={`/admin-op/${UserID}/${OperateurID}/${UnityID}/tableau`}
+            to={role === "ADMIN" ? `/admin-op/${UserID}/${OperateurID}/${UsineID}/${UnityID}/tableau` : `/user-op/${UserID}/${OperateurID}/${UnityID}/tableau`}
             className={({ isActive }) =>
               `inline-block p-4 border-b-2 rounded-t-lg ${isActive
                 ? "text-blue-600 border-blue-600 dark:text-blue-500 dark:border-blue-500"
@@ -22,7 +22,8 @@ function Tabs() {
         </li>
         <li className="me-2">
           <NavLink
-            to={`/admin-op/${UserID}/${OperateurID}/${UnityID}/parametres-op`}
+            to={role === "ADMIN" ? `/admin-op/${UserID}/${OperateurID}/${UsineID}/${UnityID}/parametres-op` : `/user-op/${UserID}/${OperateurID}/${UsineID}/${UnityID}/parametres-op`}
+
             className={({ isActive }) =>
               `inline-block p-4 border-b-2 rounded-t-lg ${isActive
                 ? "text-blue-600 border-blue-600 dark:text-blue-500 dark:border-blue-500"

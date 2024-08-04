@@ -1,11 +1,84 @@
 from flask import Blueprint, jsonify, request
-from .db import get_db  # Importer la fonction get_db depuis le module principal
+from .db import get_db  
 from flask import Flask
 from flask_cors import CORS
 import mysql.connector
 from mysql.connector import pooling
-# Création du Blueprint
+import requests
+
+
+
 saisit_bp = Blueprint('saisit', __name__)
+
+
+
+@saisit_bp.route('/saisit', methods=['POST'])
+def populate_saisit():
+    try:
+        data = request.json
+        CCID = data.get('CCID')
+        AnneeActuelle = data.get('AnneeActuelle')
+        NombreAnnees = data.get('NombreAnnees')  # Nombre d'années de prévision
+        UnityID = data.get('UnityID')
+        UsineID = data.get('UsineID')
+        OperateurID = data.get('OperateurID')
+        Valeur = data.get('Valeur')
+        
+        # Vérifier que les champs obligatoires sont présents et non vides
+        if None in [CCID, AnneeActuelle, NombreAnnees, UnityID, UsineID, OperateurID, Valeur]:
+            return jsonify({'error': 'Missing required fields or fields are None'}), 400
+        
+        # Convertir les champs à leurs types respectifs
+        CCID = int(CCID)
+        Valeur = float(Valeur)
+        NombreAnnees = int(NombreAnnees)
+        
+        # Obtenir toutes les classes
+        response_classe = requests.get('http://127.0.0.1:5000/saisit/get_classe')
+        if response_classe.status_code == 200:
+            classes = response_classe.json()
+        else:
+            return jsonify({'error': response_classe.text}), 500
+
+        for classe in classes:
+            IDClasse = classe['ID']
+            # Obtenir tous les codes SR pour la classe
+            response_sr = requests.get(f'http://127.0.0.1:5000/saisit/get_SR?IDClasse={IDClasse}')
+            if response_sr.status_code == 200:
+                sous_rebriques = response_sr.json()
+            else:
+                return jsonify({'error': response_sr.text}), 500
+            
+            for sr in sous_rebriques:
+                codeSR = sr['codeSR']
+                
+                for i in range(NombreAnnees):
+                    AnneePrevision = AnneeActuelle + i
+                    
+                    insert_data_payload = {
+                    'CCID': CCID,
+                    'AnneeActuelle': AnneeActuelle,
+                    'AnneePrevision': AnneePrevision,
+                    'UnityID': UnityID,
+                    'UsineID': UsineID,
+                    'OperateurID': OperateurID,
+                    'IDClasse': IDClasse,
+                    'codeSR': codeSR,
+                    'Valeur': Valeur}
+                    print(insert_data_payload)
+                    response_insert = requests.post('http://127.0.0.1:5000/saisit/', json=insert_data_payload)
+
+                    print(response_insert)
+
+        return jsonify({'message': 'Données insérées/mises à jour avec succès'}), 201
+
+    except ValueError:
+        return jsonify({'error': 'Invalid data type for IDClasse or Valeur'}), 400
+    except mysql.connector.Error as e:
+        if conn:
+            conn.rollback()
+        return jsonify({'error': str(e)}), 500
+
 
 @saisit_bp.route('/get_classe', methods=['GET'])
 def get_classe():
@@ -36,7 +109,6 @@ def insert_data():
     conn = None
     try:
         data = request.json
-        # Extraire les données du JSON
         CCID = data.get('CCID', None)
         AnneeActuelle = data.get('AnneeActuelle', None)
         AnneePrevision = data.get('AnneePrevision', None)
@@ -46,7 +118,7 @@ def insert_data():
         IDClasse = data.get('IDClasse', None)
         codeSR = data.get('codeSR', None)
         Valeur = data.get('Valeur', None)
-        
+        print(data)
         # Vérifier que les champs obligatoires sont présents et non vides
         if None in [CCID, AnneeActuelle, AnneePrevision, UnityID, UsineID, OperateurID, IDClasse, codeSR, Valeur]:
             return jsonify({'error': 'Missing required fields or fields are None'}), 400
@@ -66,7 +138,7 @@ def insert_data():
         """
         cursor.execute(check_query, (CCID, AnneeActuelle, AnneePrevision, UnityID, UsineID, OperateurID, IDClasse, codeSR))
         result = cursor.fetchone()
-        
+
         if result[0] > 0:
             # Mettre à jour l'enregistrement existant
             update_query = """
@@ -104,11 +176,14 @@ def insert_data():
 def get_all():
     conn = None
     try:
+        AnneeActuelle = request.args.get('AnneeActuelle', None)
         CCID = request.args.get('CCID', None)
         IDClasse = request.args.get('IDClasse', None)
         AnneePrevision = request.args.get('AnneePrevision', None)
         UnityID = request.args.get('UnityID', None)
         CodeSR = request.args.get('CodeSR', None)
+        OperateurID = request.args.get('OperateurID', None)
+        UsineID = request.args.get('UsineID', None)
 
         # Vérification des paramètres obligatoires
         if None in [IDClasse, AnneePrevision, UnityID, CodeSR, CCID]:
@@ -117,21 +192,7 @@ def get_all():
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
 
-        # Trouver UsineID à partir de UnityID
-        usine_query = """
-            SELECT UsineID
-            FROM Unity
-            WHERE UnityID = %s
-        """
-        cursor.execute(usine_query, (UnityID,))
-        usine_result = cursor.fetchone()
-        
-        if not usine_result:
-            return jsonify({'message': 'No usine found for the given UnityID'}), 404
-        
-        UsineID = usine_result['UsineID']
 
-        # Récupérer toutes les saisies pour le contrôle de coût le plus récent avec UsineID
         saisit_query = """
             SELECT * FROM Saisit AS S WHERE S.CCID = %s
               AND S.AnneePrevision = %s 
@@ -139,14 +200,17 @@ def get_all():
               AND S.IDClasse = %s 
               AND S.CodeSR = %s
               AND S.UsineID = %s
+              AND s.AnneeActuelle =%s
+              AND OperateurID = %s
         """
 
-        cursor.execute(saisit_query, (CCID, AnneePrevision, UnityID, IDClasse, CodeSR, UsineID))
+        cursor.execute(saisit_query, (CCID, AnneePrevision, UnityID, IDClasse, CodeSR, UsineID,AnneeActuelle,OperateurID))
         results = cursor.fetchall()
         if results:
             return jsonify({ 'data': results}), 200
         else:
-            return jsonify({'message': 'No data found for the most recent control'}), 200
+            print(CCID,AnneePrevision, UnityID, IDClasse, CodeSR, UsineID)
+            return jsonify({'data':"",'message': 'No data found for the most recent control '}), 200
 
     except mysql.connector.Error as e:
         return jsonify({'error': str(e)}), 500

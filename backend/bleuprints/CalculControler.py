@@ -282,13 +282,12 @@ def calcul_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, 
    
     taux_utilisation = calcul_Taux_Utilisation(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, n)
  
-    calcul_intermediere = [0] * n
-    Resultat_Actualisee = [0] * n
+    calcul_intermediere = [0] *n
+    Resultat_Actualisee = [0] *n
 
     for i in range(n):
-
+        print("heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee 1 ",i,n,taux_utilisation)
         if Type == "separation":
-            print("dkhel separation------------------------------------------------")
             calcul_intermediere[i] = valeurs[param][i] * (valeurs['PRP'][i] + valeurs['BTN'][i]) / somme_production[i]
         else:
             calcul_intermediere[i] = valeurs[param][i]* valeurs['GNL'][i] / somme_production[i]
@@ -355,7 +354,7 @@ def Auto_consomation_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, Operateur
         return jsonify({'error': 'not found in parametre table'}), 404
 
     # Récupérer les valeurs de GNL, GZL, PRP et BTN depuis la table saisit
-    codeSRs = ['GNL', 'GZL', 'PRP', 'BTN',"TAC", "QGA"]
+    codeSRs = ['GNL', 'GZL', 'PRP', 'BTN',"TAC", "QGA","QGNC","FCNS"]
     valeurs = {codeSR: [] for codeSR in codeSRs}
 
     for codeSR in codeSRs:
@@ -387,7 +386,8 @@ def Auto_consomation_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, Operateur
     if Type == "liquefaction" or Type == "liquefaction et separation":
         calcul_intermediere = [valeurs["QGA"][i] * valeurs["TAC"][i] /100 * 1000000 * valeurs['GNL'][i] / somme_production[i] / DGN for i in range(n)]
     else: 
-        calcul_intermediere = [valeurs["QGA"][i] * valeurs["TAC"][i] /100 * 1000000 * (valeurs['PRP'][i]+valeurs['BTN'][i]) / somme_production[i] / DGN for i in range( n)]
+        if Type == "separation" :
+            calcul_intermediere = [valeurs["QGNC"][i]*1000 * valeurs["FCNS"][i] for i in range( n)]
 
     Puissance = [math.pow(1 + TA, i-1) for i in range(n) ]
     Autoconsomation_Actualise = [(calcul_intermediere[i] / Puissance[i] * PGN / 1000000 ) for i in range(1, n) ]
@@ -482,4 +482,3 @@ def calcul_Taux_Utilisation(CCID, AnneeActuelle, UnityID, UsineID, OperateurID,n
 
 
     return taux_utilisation
-

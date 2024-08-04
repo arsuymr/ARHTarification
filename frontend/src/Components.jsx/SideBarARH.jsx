@@ -7,9 +7,7 @@ import { useNavigate } from "react-router-dom";
 import {
   HiArrowSmRight,
   HiChartPie,
-  HiInbox,
   HiShoppingBag,
-  HiTable,
   HiUser,
   HiChevronDown,
 } from "react-icons/hi";
@@ -66,12 +64,12 @@ const SideBarARH = ({ Role }) => {
     setShowUpdatePassword(true);
   };
 
-  const handleUpdatePasswordSuccess = () => {};
+  const handleUpdatePasswordSuccess = () => { };
 
   return (
-    <div className="h-screen">
-      <aside className="w-64 h-full" aria-label="Sidebar">
-        <div className="px-3 py-4 overflow-y-auto rounded bg-gray-50 dark:bg-gray-800 h-full">
+    <div className="flex">
+      <aside className="w-64 bg-gray-50 fixed h-screen overflow-y-auto ">
+        <div className="px-3 py-4 rounded">
           <div className="flex items-center justify-center mb-4">
             <img
               src={logo_arh}
@@ -83,37 +81,46 @@ const SideBarARH = ({ Role }) => {
           <ul className="space-y-2">
             <li>
               <Link
-                to={`/admin-arh/${UserID}`}
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                to={
+                  Role === "ADMIN"
+                    ? `/admin-arh/${UserID}`
+                    : `/user-arh/${UserID}`
+                }
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
-                <HiChartPie className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                <HiChartPie className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" />
                 <span className="ml-3">Dashboard</span>
               </Link>
             </li>
             <li>
               <button
                 type="button"
-                className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg hover:bg-gray-100"
                 onClick={() => setIsOpen(!isOpen)}
               >
-                <HiShoppingBag className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                <HiShoppingBag className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" />
                 <span className="flex-1 ml-3 text-left whitespace-nowrap">
                   Opérateurs
                 </span>
                 <HiChevronDown
-                  className={`w-6 h-6 transition-transform ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
+                  className={`w-6 h-6 transition-transform ${isOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
               <ul className={`${isOpen ? "block" : "hidden"} py-2 space-y-2`}>
                 {operators.map((operator) => (
                   <li key={operator.OperateurID}>
                     <button
-                      className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 pl-11"
-                      onClick={() =>
-                        navigate(`/admin-arh/${UserID}/${operator.OperateurID}`)
-                      }
+                      className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg hover:bg-gray-100 pl-11"
+                      onClick={() => {
+                        Role === "ADMIN"
+                          ? navigate(
+                            `/admin-arh/${UserID}/${operator.OperateurID}`
+                          )
+                          : navigate(
+                            `/user-arh/${UserID}/${operator.OperateurID}`
+                          );
+                      }}
                     >
                       {operator.Nom_operateur}
                     </button>
@@ -121,7 +128,7 @@ const SideBarARH = ({ Role }) => {
                 ))}
                 <li>
                   <button
-                    className="flex items-center w-full p-2 text-base font-semibold text-[#21466F] transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 pl-11"
+                    className="flex items-center w-full p-2 text-base font-semibold text-[#21466F] transition duration-75 rounded-lg hover:bg-gray-100 pl-11"
                     onClick={handleAddOperator}
                   >
                     Ajouter opérateur
@@ -133,21 +140,21 @@ const SideBarARH = ({ Role }) => {
               <li>
                 <Link
                   to={`/admin-arh/${UserID}/moderateurs`}
-                  className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
                 >
-                  <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                  <HiUser className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" />
                   <span className="flex-1 ml-3 whitespace-nowrap">
-                    Modérateurs
+                    Utilisateurs
                   </span>
                 </Link>
               </li>
             )}
             <li>
               <a
-                href="https://google.com"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                href="/sign-in"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
-                <HiArrowSmRight className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                <HiArrowSmRight className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" />
                 <span className="flex-1 ml-3 whitespace-nowrap">
                   Se déconnecter
                 </span>
@@ -155,16 +162,23 @@ const SideBarARH = ({ Role }) => {
             </li>
           </ul>
 
-          <div className="mt-60">
-            <div className="flex-1 ml-3 whitespace-nowrap">
-              Connected as {user.username}
-            </div>
-            <div className="flex-1 ml-3 whitespace-nowrap font-bold">
-              <button onClick={handleUpdatePassword}>Change Password</button>
+          <div className=" w-full p-4 text-center text-gray-900">
+            <div className="flex flex-col items-start ml-1">
+              <div className="flex-1 whitespace-nowrap">
+                Connecté en tant que {user.username}
+              </div>
+              <div className="flex-1 whitespace-nowrap">
+                <button className="font-bold" onClick={handleUpdatePassword}>
+                  Changer mot de passe.
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </aside>
+      <div className="flex-1 ml-64 p-4 overflow-y-auto h-screen">
+        {/* Other components/content can be rendered here */}
+      </div>
       <Modal show={showAddOperator} onClose={() => setShowAddOperator(false)}>
         <AddOperator onSuccess={handleAddOperatorSuccess} />
       </Modal>

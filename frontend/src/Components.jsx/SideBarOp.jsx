@@ -14,6 +14,8 @@ import Modal from "./Modal"; // Import the Modal component
 import AddUsine from "./ajoutUsine";
 import AqUsine from "./aqUsine";
 import UpdatePassword from "./UpdatePassword";
+import { MdHistory } from "react-icons/md";
+
 
 const SideBarOp = ({ Role }) => {
   const { OperateurID, UserID } = useParams();
@@ -119,192 +121,204 @@ const SideBarOp = ({ Role }) => {
   const handleUpdatePasswordSuccess = () => {
     setShowUpdatePassword(false);
   };
+
+  console.log(Role)
   return (
-    <div className="bg-gray-50 h-screen relative">
-      <aside className="w-64 " aria-label="Sidebar">
-        <div className="px-3 overflow-y-auto rounded">
-          <div className="flex items-center justify-center mb-4">
-            <img
-              src={logo_arh}
-              alt="Logo ARH"
-              className="w-40 h-40"
-              onClick={() => getUsines(OperateurID)}
-            />
-          </div>
-          <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-            <HiInbox className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-            <span
-              className="flex-1 ml-3 whitespace-nowrap "
-              onClick={() => navigate(`/admin-op/${UserID}/${OperateurID}/`)}
-            >
-              Accueil
-            </span>
-          </button>
-          <ul className="space-y-2">
-            <li>
-              <button
-                type="button"
-                className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                onClick={() => setIsOpen(!isOpen)}
+    <div className="flex">
+      <div className="bg-gray-50 h-screen overflow-y-auto ">
+        <aside className="w-64 " aria-label="Sidebar">
+          <div className="px-3 rounded ">
+            <div className="flex items-center justify-center mb-4">
+              <img
+                src={logo_arh}
+                alt="Logo ARH"
+                className="w-40 h-40"
+                onClick={() => getUsines(OperateurID)}
+              />
+            </div>
+            <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+              <HiInbox className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+              <span
+                className="flex-1 ml-3 whitespace-nowrap "
+                onClick={() => {
+                  Role === "ADMIN" ? navigate(
+                    `/admin-op/${UserID}/${OperateurID}/`
+                  ) : navigate(
+                    `/user-op/${UserID}/${OperateurID}/`
+                  )
+                }
+                }
               >
-                <HiShoppingBag className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                <span className="flex-1 ml-3 text-left whitespace-nowrap">
-                  Usines
-                </span>
-                <HiChevronDown
-                  className={`w-6 h-6 transition-transform ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              <ul
-                className={`${isOpen ? "block" : "hidden"} py-2 space-y-2 pl-4`}
-              >
-                {usines.map((usine) => (
-                  <li key={usine.UsineID}>
-                    <button
-                      className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                      onClick={() => handleUsineClick(usine)}
-                    >
-                      {usine.NomUsine}
-                    </button>
-                    {selectedUsine &&
-                      selectedUsine.UsineID === usine.UsineID && (
-                        <ul className="py-2 space-y-2 pl-6">
-                          {units.map((unit) => (
-                            <li key={unit.UnityID}>
+                Accueil
+              </span>
+            </button>
+            <ul className="space-y-2">
+              <li>
+                <button
+                  type="button"
+                  className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                  onClick={() => setIsOpen(!isOpen)}
+                >
+                  <HiShoppingBag className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                  <span className="flex-1 ml-3 text-left whitespace-nowrap">
+                    Usines
+                  </span>
+                  <HiChevronDown
+                    className={`w-6 h-6 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+                <ul
+                  className={`${isOpen ? "block" : "hidden"} py-2 space-y-2 pl-4`}
+                >
+                  {usines.map((usine) => (
+                    <li key={usine.UsineID}>
+                      <button
+                        className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                        onClick={() => handleUsineClick(usine)}
+                      >
+                        {usine.NomUsine}
+                      </button>
+                      {selectedUsine &&
+                        selectedUsine.UsineID === usine.UsineID && (
+                          <ul className="py-2 space-y-2 pl-6">
+                            {units.map((unit) => (
+                              <li key={unit.UnityID}>
+                                <button
+                                  className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                  onClick={() => {
+                                    Role === "ADMIN" ? navigate(
+                                      `/admin-op/${UserID}/${OperateurID}/${usine.UsineID}/${unit.UnityID}/tableau`
+                                    ) : navigate(
+                                      `/user-op/${UserID}/${OperateurID}/${usine.UsineID}/${unit.UnityID}/tableau`
+                                    )
+                                  }
+                                  }
+                                >
+                                  {unit.NomUnity}
+                                </button>
+                              </li>
+                            ))}
+                            <li>
                               <button
-                                className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                                onClick={() =>
-                                  navigate(
-                                    `/admin-op/${UserID}/${OperateurID}/${unit.UnityID}/tableau`
-                                  )
-                                }
+                                className="flex font-semibold text-[#21466F] items-center w-full p-2 text-base transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                                onClick={() => handleAjouterUnity(usine.UsineID)}
                               >
-                                {unit.NomUnity}
+                                Ajouter Unité
                               </button>
                             </li>
-                          ))}
-                          <li>
-                            <button
-                              className="flex font-semibold text-[#21466F] items-center w-full p-2 text-base transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                              onClick={() => handleAjouterUnity(usine.UsineID)}
-                            >
-                              Ajouter Unité
-                            </button>
-                          </li>
-                        </ul>
-                      )}
+                          </ul>
+                        )}
+                    </li>
+                  ))}
+                  <li>
+                    <button
+                      className="flex items-center w-full p-2 text-base font-semibold text-[#21466F] transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                      onClick={handleAjouterUsine}
+                    >
+                      Ajouter usine
+                    </button>
                   </li>
-                ))}
-                <li>
-                  <button
-                    className="flex items-center w-full p-2 text-base font-semibold text-[#21466F] transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                    onClick={handleAjouterUsine}
-                  >
-                    Ajouter usine
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="flex items-center w-full p-2 text-base font-semibold text-[#21466F] transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                    onClick={handleAqUsine}
-                  >
-                    Acquisition d'une usine
-                  </button>
-                </li>
-              </ul>
-            </li>
+                  <li>
+                    <button
+                      className="flex items-center w-full p-2 text-base font-semibold text-[#21466F] transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                      onClick={handleAqUsine}
+                    >
+                      Acquisition d'une usine
+                    </button>
+                  </li>
+                </ul>
+              </li>
 
-            {Role === "ADMIN" && (
+              {Role === "ADMIN" && (
+                <li>
+                  <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                    <span
+                      className="flex-1 ml-3 whitespace-nowrap"
+                      onClick={() => navigate(
+                        `/admin-op/${UserID}/${OperateurID}/AjouterMod`
+                      )}
+                    >
+                      Utilisateurs
+                    </span>
+                  </button>
+                </li>
+              )}
+              {Role === "ADMIN" ? (
+                <li>
+                  <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <MdHistory className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                    <span
+                      className="flex-1 ml-3 whitespace-nowrap "
+                      onClick={() =>
+                        navigate(`/admin-op/${UserID}/${OperateurID}/Historique`)
+                      }
+                    >
+                      Historique
+                    </span>
+                  </button>
+                </li>
+              ) : (
+                <li>
+                  <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <MdHistory className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                    <span
+                      className="flex-1 ml-3 whitespace-nowrap "
+                      onClick={() =>
+                        navigate(`/user-op/${UserID}/${OperateurID}/Historique`)
+                      }
+                    >
+                      Historique
+                    </span>
+                  </button>
+                </li>
+              )}
               <li>
-                <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                  <span
-                    className="flex-1 ml-3 whitespace-nowrap "
-                    onClick={() =>
-                      navigate(`/admin-op/${UserID}/${OperateurID}/AjouterMod`)
-                    }
-                  >
-                    Utilisateurs
+                <NavLink
+                  to="/sign-in"
+                  className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <HiArrowSmRight className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                  <span className="flex-1 ml-3 whitespace-nowrap">
+                    Se déconnecter
                   </span>
-                </button>
+                </NavLink>
               </li>
-            )}
-            {Role === "ADMIN" ? (
-              <li>
-                <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                  <span
-                    className="flex-1 ml-3 whitespace-nowrap "
-                    onClick={() =>
-                      navigate(`/admin-op/${UserID}/${OperateurID}/Historique`)
-                    }
-                  >
-                    Historique
-                  </span>
+            </ul>
+          </div>
+          <div className=" w-full p-4 text-center text-gray-900 dark:text-white">
+            <div className="flex flex-col items-start ml-1">
+              <div className="flex-1 whitespace-nowrap">
+                Connecté en tant que {user.username}
+              </div>
+              <div className="flex-1 whitespace-nowrap">
+                <button className="font-bold" onClick={handleUpdatePassword}>
+                  Changer mot de passe.
                 </button>
-              </li>
-            ) : (
-              <li>
-                <button className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <HiUser className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                  <span
-                    className="flex-1 ml-3 whitespace-nowrap "
-                    onClick={() =>
-                      navigate(`/user-op/${UserID}/${OperateurID}/Historique`)
-                    }
-                  >
-                    Historique
-                  </span>
-                </button>
-              </li>
-            )}
-            <li>
-              <NavLink
-                to="/sign-in"
-                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <HiArrowSmRight className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                <span className="flex-1 ml-3 whitespace-nowrap">
-                  Se déconnecter
-                </span>
-              </NavLink>
-            </li>
-          </ul>
-        </div>
-        <div className="absolute bottom-0 w-full p-4 text-center text-gray-900 dark:text-white">
-          <div className="flex flex-col items-start ml-1">
-            <div className="flex-1 whitespace-nowrap">
-              Connecté en tant que {user.username}
-            </div>
-            <div className="flex-1 whitespace-nowrap">
-              <button className="font-bold" onClick={handleUpdatePassword}>
-                Changer mot de passe.
-              </button>
+              </div>
             </div>
           </div>
-        </div>
-      </aside>
+        </aside >
 
-      <Modal show={showAddUsine} onClose={() => setShowAddUsine(false)}>
-        <AddUsine onSuccess={handleAddUsineSuccess} />
-      </Modal>
+        <Modal show={showAddUsine} onClose={() => setShowAddUsine(false)}>
+          <AddUsine onSuccess={handleAddUsineSuccess} />
+        </Modal>
 
-      <Modal show={showAddUnity} onClose={() => setShowAddUnity(false)}>
-        <AddUnity UsineID={currentUsineId} onSuccess={handleAddUnitySuccess} />
-      </Modal>
+        <Modal show={showAddUnity} onClose={() => setShowAddUnity(false)}>
+          <AddUnity UsineID={currentUsineId} onSuccess={handleAddUnitySuccess} />
+        </Modal>
 
-      <Modal show={showAqUsine} onClose={() => setShowAqUsine(false)}>
-        <AqUsine onSuccess={handleAqUsineSuccess} />
-      </Modal>
+        <Modal show={showAqUsine} onClose={() => setShowAqUsine(false)}>
+          <AqUsine onSuccess={handleAqUsineSuccess} />
+        </Modal>
 
-      <Modal
-        show={showUpdatePassword}
-        onClose={() => setShowUpdatePassword(false)}
-      >
-        <UpdatePassword onSuccess={handleUpdatePasswordSuccess} />
-      </Modal>
+        <Modal
+          show={showUpdatePassword}
+          onClose={() => setShowUpdatePassword(false)}
+        >
+          <UpdatePassword onSuccess={handleUpdatePasswordSuccess} />
+        </Modal>
+      </div>
     </div>
   );
 };

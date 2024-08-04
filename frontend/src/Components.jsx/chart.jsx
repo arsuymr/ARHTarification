@@ -3,7 +3,6 @@ import axios from "axios";
 import { LineChart } from "@mui/x-charts/LineChart";
 import TabDashboard from "./TabDashboard";
 import SideBarARH from "./SideBarARH";
-import SideBarModARH from "./SideBarModARH";
 
 export default function Charts({ role }) {
   const [xLabels, setXLabels] = useState([]);

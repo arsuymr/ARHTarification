@@ -24,9 +24,9 @@ export default function Login() {
       } else if (rol === "admin") {
         navigate(`/admin-arh/${UserID}`);
       } else if (rol === "user" && OperateurID) {
-        navigate(`/mod-op/${UserID}/${OperateurID}`);
+        navigate(`/user-op/${UserID}/${OperateurID}`);
       } else if (rol === "user") {
-        navigate(`/mod-arh/${UserID}`);
+        navigate(`/user-arh/${UserID}`);
       } else {
         console.log("Role not recognized or missing OperateurID");
         setError("Role not recognized or missing OperateurID");
