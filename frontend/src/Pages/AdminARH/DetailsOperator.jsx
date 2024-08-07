@@ -23,30 +23,39 @@ export default function DetailsOperator({ role }) {
         `http://127.0.0.1:5000/operator/${operateurId}/usines`
       );
       setUsines(response.data);
+      console.log("dta", usines);
     } catch (error) {
       console.error("Error getting usines:", error);
     }
   };
 
   const handleCardClick = (usineId) => {
-    role === "ADMIN" ? navigate(`/admin-arh/${UserID}/${OperateurID}/${usineId}`) : navigate(`/user-arh/${UserID}/${OperateurID}/${usineId}`)
+    role === "ADMIN"
+      ? navigate(`/admin-arh/${UserID}/${OperateurID}/${usineId}`)
+      : navigate(`/user-arh/${UserID}/${OperateurID}/${usineId}`);
   };
 
   return (
     <div className="flex">
       <SideBarARH Role={role} />
       {usines.length > 0 ? (
-        usines.map((usine) => (
-          <div className="flex flex-wrap gap-7 p-6">
-            <Card
-              key={usine.id}
-              NomUsine={usine.NomUsine}
-              Wilaya={usine.Wilaya}
-              UsineID={usine.UsineID}
-              onClick={() => handleCardClick(usine.UsineID)}
-            />
+        <div className="flex flex-col">
+          <div className="mx-6 mt-6 text-2xl font-bold  ">
+            {usines[0].Nom_operateur}
           </div>
-        ))
+
+          <div className="flex flex-wrap gap-7 p-6">
+            {usines.map((usine) => (
+              <Card
+                key={usine.id}
+                NomUsine={usine.NomUsine}
+                Wilaya={usine.Wilaya}
+                UsineID={usine.UsineID}
+                onClick={() => handleCardClick(usine.UsineID)}
+              />
+            ))}
+          </div>
+        </div>
       ) : (
         <Stack className="w-full m-6 ">
           <Alert severity="info">Aucune usine à afficher.</Alert>

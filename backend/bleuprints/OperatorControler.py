@@ -82,16 +82,11 @@ def usine(operateur_id):
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
         query = '''
-           
-            SELECT NomUsine, UsineID 
-FROM Usine 
-WHERE UsineID IN (
-    SELECT Usine.UsineID 
-    FROM Usine 
-    JOIN Posseder ON Usine.UsineID = Posseder.UsineID 
-    JOIN Operateur ON Posseder.OperateurID = Operateur.OperateurID 
-    WHERE Operateur.OperateurID = %s AND Posseder.Activ=1
-);
+            SELECT Usine.NomUsine, Usine.UsineID, Operateur.Nom_operateur
+            FROM Usine
+            JOIN Posseder ON Usine.UsineID = Posseder.UsineID
+            JOIN Operateur ON Posseder.OperateurID = Operateur.OperateurID
+            WHERE Operateur.OperateurID = %s AND Posseder.Activ=1
         '''
         cursor.execute(query, (operateur_id,))
         results = cursor.fetchall()
@@ -103,6 +98,7 @@ WHERE UsineID IN (
             cursor.close()
         if conn:
             conn.close()
+
 
 
 @operator_bp.route('/<int:usine_id>/units', methods=['GET'])

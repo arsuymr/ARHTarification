@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom";
 import CardUnity from "../Components.jsx/carteUnite";
 import SideBarOp from "../Components.jsx/SideBarOp";
 import SideBarARH from "../Components.jsx/SideBarARH";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 export default function Unites({ role, Interface }) {
   const { UsineID } = useParams();
@@ -29,8 +31,11 @@ export default function Unites({ role, Interface }) {
 
   return (
     <div className="flex">
-      {Interface === "Op" ?
-        <SideBarOp Role={role} /> : <SideBarARH Role={role} />}
+      {Interface === "Op" ? (
+        <SideBarOp Role={role} />
+      ) : (
+        <SideBarARH Role={role} />
+      )}
       <div className="flex flex-wrap w-full gap-7 p-6 ">
         {usines.length > 0 ? (
           usines.map((usine) => (
@@ -41,7 +46,9 @@ export default function Unites({ role, Interface }) {
             />
           ))
         ) : (
-          <p>No unities available</p>
+          <Stack className="w-full m-6">
+            <Alert severity="info">Aucune unité à afficher.</Alert>
+          </Stack>
         )}
       </div>
     </div>
