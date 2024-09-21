@@ -9,12 +9,14 @@ import Paper from "@mui/material/Paper";
 import axios from "axios";
 import { Alert, AlertTitle, Stack } from "@mui/material";
 
-const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator, setErrorMessage }) => {
+const TabAffichage = ({ IDClasse, NomClasse, selectedYear, selectedUnit, selectedOperator, setErrorMessage }) => {
     const [data, setData] = useState([]);
     const [nomsSR, setNomsSR] = useState([]);
     const [years, setYears] = useState([]);
     const [codeSRs, setCodeSRs] = useState([]);
     const [tauxUtilisation, setTauxUtilisation] = useState([]);
+    const [error, setError] = useState(false);
+
 
 
     const getSR = async (IDClasse) => {
@@ -78,11 +80,14 @@ const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator, 
                                 })
                                 .then((response) => {
                                     setErrorMessage(false)
-                                    return response.data.data.length > 0 ? response.data.data[0].Valeur : ""
+                                    setError(false)
+                                    console.log()
+                                    return response.data.data ? response.data.data[0].Valeur : ""
                                 })
                                 .catch((error) => {
                                     console.error(error);
                                     setErrorMessage(true)
+                                    setError(true)
 
                                 })
                         )
@@ -94,6 +99,7 @@ const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator, 
         } catch (error) {
             console.error("Error fetching data:", error);
             setErrorMessage(true)
+            setError(true)
             setTauxUtilisation([])
             return Array(codeSRs.length).fill(Array(0).fill(""));
         }
@@ -113,50 +119,55 @@ const TabAffichage = ({ IDClasse, selectedYear, selectedUnit, selectedOperator, 
             }
         };
         fetchData();
-    }, [IDClasse, selectedYear, selectedUnit, selectedOperator, setErrorMessage]);
-
+    }, [IDClasse, selectedYear, selectedUnit, selectedOperator]);
     return (
         <div>
-            <TableContainer component={Paper}>
-                <Table size="small" aria-label="a dense table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Année</TableCell>
-                            {years.map((year) => (
-                                <TableCell key={year} align="center">
-                                    {year}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {nomsSR.map((nomSR, rowIndex) => (
-                            <TableRow key={nomSR}>
-                                <TableCell component="th" scope="row">
-                                    {nomSR}
-                                </TableCell>
-                                {data[rowIndex] &&
-                                    data[rowIndex].map((value, colIndex) => (
-                                        <TableCell key={colIndex} align="center">
-                                            {value}
+            {data && !error && (
+                <div key={IDClasse} className="mt-8">
+                    <div className="font-semibold text-xl ml-3 mb-4">
+                        {NomClasse}
+                    </div>
+                    <TableContainer component={Paper}>
+                        <Table size="small" aria-label="a dense table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Année</TableCell>
+                                    {years.map((year) => (
+                                        <TableCell key={year} align="center">
+                                            {year}
                                         </TableCell>
                                     ))}
-                            </TableRow>
-                        ))}
-                    </TableBody>
-
-                    {IDClasse === 'TauxUtilisationID' && (
-                        <TableBody>
-                            <TableRow>
-                                <TableCell>Taux d'Utilisation</TableCell>
-                                {tauxUtilisation.map((taux, index) => (
-                                    <TableCell key={index}>{taux}</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {nomsSR.map((nomSR, rowIndex) => (
+                                    <TableRow key={nomSR}>
+                                        <TableCell component="th" scope="row">
+                                            {nomSR}
+                                        </TableCell>
+                                        {data[rowIndex] &&
+                                            data[rowIndex].map((value, colIndex) => (
+                                                <TableCell key={colIndex} align="center">
+                                                    {value}
+                                                </TableCell>
+                                            ))}
+                                    </TableRow>
                                 ))}
-                            </TableRow>
-                        </TableBody>
-                    )}
-                </Table>
-            </TableContainer>
+                            </TableBody>
+
+                            {IDClasse === 'TauxUtilisationID' && (
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell>Taux d'Utilisation</TableCell>
+                                        {tauxUtilisation.map((taux, index) => (
+                                            <TableCell key={index}>{taux}</TableCell>
+                                        ))}
+                                    </TableRow>
+                                </TableBody>
+                            )}
+                        </Table>
+                    </TableContainer>
+                </div>)}
         </div >
 
 

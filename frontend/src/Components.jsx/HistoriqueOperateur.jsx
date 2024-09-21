@@ -83,11 +83,9 @@ export default function HistoriqueOp({ role }) {
         )}
         {classes.map((classe) => (
           <div key={classe.ID} className="mt-8">
-            <div className="font-semibold text-xl ml-3 mb-4">
-              {classe.NomClasse}
-            </div>
             <TabAffichage
               IDClasse={classe.ID}
+              NomClasse={classe.NomClasse}
               selectedYear={selectedYear}
               selectedUnit={selectedUnit}
               selectedOperator={OperateurID}

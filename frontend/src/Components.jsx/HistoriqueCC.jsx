@@ -11,7 +11,7 @@ export default function HistoriqueCC({ role }) {
     const [units, setUnits] = useState([]);
     const [selectedOperator, setSelectedOperator] = useState("");
     const [selectedUnit, setSelectedUnit] = useState("");
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedYear, setSelectedYear] = useState();
     const [selectedOperateurID, setSelectedOperatorID] = useState();
     const [ErrorMessage, setErrorMessage] = useState(false);
 
@@ -135,11 +135,9 @@ export default function HistoriqueCC({ role }) {
                     </Stack>)}
                     {classes.map((classe) => (
                         <div key={classe.ID} className="mt-8">
-                            <div className="font-semibold text-xl ml-3 mb-4">
-                                {classe.NomClasse}
-                            </div>
                             <TabAffichage
                                 IDClasse={classe.ID}
+                                NomClasse={classe.NomClasse}
                                 selectedYear={selectedYear}
                                 selectedUnit={selectedUnit}
                                 selectedOperator={selectedOperateurID}
