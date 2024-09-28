@@ -4,14 +4,15 @@ import Auth from "./Pages/Authentification";
 import TableauComplet from "./Components.jsx/tableauComplet";
 import ParamsTable from "./Components.jsx/parametresop";
 import Unites from "./Pages/Unites";
-import Charts from "./Components.jsx/chart";
-import SimulationPage from "./Components.jsx/Simulation";
+import Dashboard from "./Components.jsx/chart";
+import Dashboard from "./Components.jsx/Simulation";
 import HistoriqueCC from "./Components.jsx/HistoriqueCC";
 import AccueilOp from "./Pages/AdminOperator/AccueilOperator";
 import GestionModARH from "./Pages/AdminARH/GestionModARH";
 import GestionModOp from "./Pages/AdminOperator/GestionModOp";
 import DetailsOperator from "./Pages/AdminARH/DetailsOperator";
 import HistoriqueOp from "./Components.jsx/HistoriqueOperateur";
+import Dashboard from "./Components.jsx/Dashboard";
 function App() {
   return (
     <Router>
@@ -65,10 +66,13 @@ function App() {
           element={<Unites role="USER" Interface="Op" />}
         />
         {/** ADMIN ARH  */}
-        <Route path="/admin-arh/:UserID/" element={<Charts role="ADMIN" />} />
+        <Route
+          path="/admin-arh/:UserID/"
+          element={<Dashboard role="ADMIN" />}
+        />
         <Route
           path="/admin-arh/:UserID/DashBoard/Simulation_donnee"
-          element={<SimulationPage role="ADMIN" />}
+          element={<Dashboard role="ADMIN" />}
         />
         <Route
           path="/admin-arh/:UserID/DashBoard/Historique"
@@ -89,7 +93,7 @@ function App() {
 
         <Route
           path="/admin-arh/:UserID/DashBoard/Graphical_visualisation"
-          element={<Charts role="ADMIN" />}
+          element={<Dashboard role="ADMIN" />}
         />
         {/** USER ARH  */}
         <Route
@@ -99,13 +103,13 @@ function App() {
 
         <Route
           path="/user-arh/:UserID/DashBoard/Graphical_visualisation"
-          element={<Charts role="USER" />}
+          element={<Dashboard role="USER" />}
         />
 
-        <Route path="/user-arh/:UserID/" element={<Charts role="USER" />} />
+        <Route path="/user-arh/:UserID/" element={<Dashboard role="USER" />} />
         <Route
           path="/user-arh/:UserID/DashBoard/Simulation_donnee"
-          element={<SimulationPage role="USER" />}
+          element={<Dashboard role="USER" />}
         />
 
         <Route
