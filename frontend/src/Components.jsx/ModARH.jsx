@@ -21,7 +21,9 @@ export default function ModARH() {
   const handleClose = () => {
     setOpen(false);
   };
-
+  // const handleAddOperator = () => {
+  //   setShowAddOperator(true);
+  // };
   const getMod = async () => {
     try {
       const response = await axios.get(
@@ -95,9 +97,9 @@ export default function ModARH() {
   };
 
   return (
-    <div className="m-[50px] overflow-x-auto shadow-md sm:rounded-lg w-full">
-      <div className="flex items-center justify-between pb-4 bg-white dark:bg-gray-900">
-        <div className="relative flex-grow mr-4 max-w-xs">
+    <div className="m-[150px] overflow-x-auto shadow-md sm:rounded-lg w-full h-screen">
+      <div className="flex items-center justify-end pb-4 bg-white ">
+        {/* <div className="relative flex-grow mr-4 max-w-xs">
           <label htmlFor="table-search" className="sr-only">
             Search
           </label>
@@ -126,7 +128,7 @@ export default function ModARH() {
               placeholder="Search for users"
             />
           </div>
-        </div>
+        </div> */}
         <div className="relative">
           <button
             id="dropdownActionButton"

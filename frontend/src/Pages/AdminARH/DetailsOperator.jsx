@@ -5,62 +5,63 @@ import Card from "../../Components.jsx/carte";
 import SideBarARH from "../../Components.jsx/SideBarARH";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
-
+import OperatorCard from "../../Components.jsx/OperatorCard";
+import UsineCard from "../../Components.jsx/UsineCard";
+import Unities from "../../Components.jsx/Unities";
+import Modal from "../../Components.jsx/Modal";
+import AddOperator from "../../Components.jsx/AddOperator";
+import add from "../../assets/add.svg";
 export default function DetailsOperator({ role }) {
-  const { OperateurID, UserID } = useParams();
+  // const { OperateurID, UserID } = useParams();
   const [usines, setUsines] = useState([]);
+  const [operators, setOperators] = useState([]);
+  const [showAddOperator, setShowAddOperator] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (OperateurID) {
-      getUsines(OperateurID);
-    }
-  }, [OperateurID]);
+    getOperators();
+  }, []);
 
-  const getUsines = async (operateurId) => {
+  const getOperators = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:5000/operator/${operateurId}/usines`
+        `http://127.0.0.1:5000/operator/Get_all_operateur`
       );
-      setUsines(response.data);
-      console.log("dta", usines);
+      setOperators(response.data);
     } catch (error) {
-      console.error("Error getting usines:", error);
+      console.error("Error getting operators:", error);
     }
   };
-
-  const handleCardClick = (usineId) => {
-    role === "ADMIN"
-      ? navigate(`/admin-arh/${UserID}/${OperateurID}/${usineId}`)
-      : navigate(`/user-arh/${UserID}/${OperateurID}/${usineId}`);
+  const handleAddOperator = () => {
+    setShowAddOperator(true);
   };
 
+  const handleAddOperatorSuccess = () => {
+    getOperators();
+  };
+
+  console.log("operators", operators);
   return (
     <div className="flex">
       <SideBarARH Role={role} />
-      {usines.length > 0 ? (
-        <div className="flex flex-col">
-          <div className="mx-6 mt-6 text-2xl font-bold  ">
-            {usines[0].Nom_operateur}
-          </div>
-
-          <div className="flex flex-wrap gap-7 p-6">
-            {usines.map((usine) => (
-              <Card
-                key={usine.id}
-                NomUsine={usine.NomUsine}
-                Wilaya={usine.Wilaya}
-                UsineID={usine.UsineID}
-                onClick={() => handleCardClick(usine.UsineID)}
-              />
+      <div className="border-[1px] border-blue-200 rounded-[10px] w-full m-[150px] relative">
+        <button
+          className="absolute -top-4 right-[60px] bg-white px-8 flex items-center justify-center gap-5"
+          onClick={handleAddOperator}
+        >
+          Ajouter opérateur
+          <img src={add} alt="alt" />
+        </button>
+        <div className="flex-col flex gap-[10px] mx-[60px] my-[40px] ">
+          {operators.length &&
+            operators.map((operator) => (
+              <OperatorCard operator={operator} isARH={true} />
             ))}
-          </div>
         </div>
-      ) : (
-        <Stack className="w-full m-6 ">
-          <Alert severity="info">Aucune usine à afficher.</Alert>
-        </Stack>
-      )}
+        <Modal show={showAddOperator} onClose={() => setShowAddOperator(false)}>
+          <AddOperator onSuccess={handleAddOperatorSuccess} />
+        </Modal>
+      </div>
     </div>
   );
 }

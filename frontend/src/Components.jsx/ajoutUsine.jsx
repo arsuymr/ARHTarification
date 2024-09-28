@@ -94,7 +94,7 @@ export default function AddUsine({ onSuccess }) {
   };
 
   return (
-    <div className="flex justify-center items-center ">
+    <div className="flex justify-center items-center z-50">
       <form className="w-[300px] max-w-md mx-auto" onSubmit={handleSubmit}>
         <h2 className="text-xl font-semibold mb-6">Ajouter une Usine</h2>
 

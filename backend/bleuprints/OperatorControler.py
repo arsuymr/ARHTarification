@@ -82,7 +82,7 @@ def usine(operateur_id):
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
         query = '''
-            SELECT Usine.NomUsine, Usine.UsineID, Operateur.Nom_operateur
+            SELECT Usine.NomUsine, Usine.UsineID,Usine.Wilaya, Operateur.Nom_operateur
             FROM Usine
             JOIN Posseder ON Usine.UsineID = Posseder.UsineID
             JOIN Operateur ON Posseder.OperateurID = Operateur.OperateurID
@@ -394,3 +394,32 @@ def addOperator():
             conn.close()
 
     return jsonify({"message": "Operator created successfully"}), 201
+
+@operator_bp.route("/getByID/<int:operateur_id>", methods=["GET"])
+def getOperatorById(operateur_id):
+    conn = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+
+        # Query to fetch operator details by ID
+        query = 'SELECT OperateurID, Nom_operateur FROM operateur WHERE OperateurID = %s'
+        cursor.execute(query, (operateur_id,))
+        operator = cursor.fetchone()
+
+        if not operator:
+            return jsonify({"error": "Operator not found"}), 404
+
+        # If the operator exists, return the data as an object with id and name
+        operator_data = {
+            "OperateurID": operator[0],
+            "Nom_operateur": operator[1]
+        }
+
+        return jsonify(operator_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()

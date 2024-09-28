@@ -75,7 +75,7 @@ function App() {
           element={<HistoriqueCC role="ADMIN" />}
         />
         <Route
-          path="/admin-arh/:UserID/:OperateurID"
+          path="/admin-arh/:UserID/details"
           element={<DetailsOperator role="ADMIN" />}
         />
         <Route

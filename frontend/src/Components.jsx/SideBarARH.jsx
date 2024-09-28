@@ -13,6 +13,9 @@ import {
 } from "react-icons/hi";
 import AddOperator from "./AddOperator";
 import UpdatePassword from "./UpdatePassword";
+import dashboard from "../assets/dashboard.svg";
+import users from "../assets/users.svg";
+import operator from "../assets/operators.svg";
 
 const SideBarARH = ({ Role }) => {
   const { UserID } = useParams();
@@ -64,20 +67,23 @@ const SideBarARH = ({ Role }) => {
     setShowUpdatePassword(true);
   };
 
-  const handleUpdatePasswordSuccess = () => { };
+  const handleUpdatePasswordSuccess = () => {};
 
   return (
-    <div className="flex">
-      <aside className="w-64 bg-gray-50 fixed h-screen overflow-y-auto ">
-        <div className="px-3 py-4 rounded">
-          <div className="flex items-center justify-center mb-4">
-            <img
-              src={logo_arh}
-              alt="Logo ARH"
-              className="w-40 h-40"
-              onClick={() => getOperators()}
-            />
-          </div>
+    <div
+      className="flex flex-col text-[24px] font-poppins
+    "
+    >
+      <div className="flex items-center justify-center fixed left-[70px] ">
+        <img
+          src={logo_arh}
+          alt="Logo ARH"
+          className="w-40 h-40"
+          onClick={() => getOperators()}
+        />
+      </div>
+      <aside className="p-8 rounded-r-2xl border-[#D5E7F2] border-[2px] fixed h-screen overflow-y-auto mt-[150px] ">
+        <div className="px-10 py-4 mt-16">
           <ul className="space-y-2">
             <li>
               <Link
@@ -88,8 +94,11 @@ const SideBarARH = ({ Role }) => {
                 }
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
               >
-                <HiChartPie className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" />
-                <span className="ml-3">Dashboard</span>
+                <img
+                  src={dashboard}
+                  className=" text-gray-500 transition duration-75 group-hover:text-gray-900"
+                />
+                <span className="ml-6">Dashboard</span>
               </Link>
             </li>
             <li>
@@ -98,29 +107,33 @@ const SideBarARH = ({ Role }) => {
                 className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg hover:bg-gray-100"
                 onClick={() => setIsOpen(!isOpen)}
               >
-                <HiShoppingBag className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" />
-                <span className="flex-1 ml-3 text-left whitespace-nowrap">
-                  Opérateurs
-                </span>
-                <HiChevronDown
-                  className={`w-6 h-6 transition-transform ${isOpen ? "rotate-180" : ""
-                    }`}
+                <img
+                  src={operator}
+                  alt="o"
+                  className=" text-gray-500 transition duration-75 group-hover:text-gray-900"
                 />
+                <button
+                  className="flex-1 ml-6 text-left whitespace-nowrap"
+                  onClick={() => {
+                    Role === "ADMIN"
+                      ? navigate(`/admin-arh/${UserID}/details`)
+                      : navigate(`/user-arh/${UserID}`);
+                  }}
+                >
+                  Opérateurs
+                </button>
+                {/* <HiChevronDown
+                  className={`w-6 h-6 transition-transform ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                /> */}
               </button>
-              <ul className={`${isOpen ? "block" : "hidden"} py-2 space-y-2`}>
+              {/* <ul className={`${isOpen ? "block" : "hidden"} py-2 space-y-2`}>
                 {operators.map((operator) => (
                   <li key={operator.OperateurID}>
                     <button
                       className="flex items-center w-full p-2 text-base font-normal text-gray-900 transition duration-75 rounded-lg hover:bg-gray-100 pl-11"
-                      onClick={() => {
-                        Role === "ADMIN"
-                          ? navigate(
-                            `/admin-arh/${UserID}/${operator.OperateurID}`
-                          )
-                          : navigate(
-                            `/user-arh/${UserID}/${operator.OperateurID}`
-                          );
-                      }}
+
                     >
                       {operator.Nom_operateur}
                     </button>
@@ -134,7 +147,7 @@ const SideBarARH = ({ Role }) => {
                     Ajouter opérateur
                   </button>
                 </li>
-              </ul>
+              </ul> */}
             </li>
             {Role === "ADMIN" && (
               <li>
@@ -142,14 +155,17 @@ const SideBarARH = ({ Role }) => {
                   to={`/admin-arh/${UserID}/moderateurs`}
                   className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
                 >
-                  <HiUser className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900" />
-                  <span className="flex-1 ml-3 whitespace-nowrap">
+                  <img
+                    src={users}
+                    className=" text-gray-500 transition duration-75 group-hover:text-gray-900"
+                  />
+                  <span className="flex-1 ml-6 whitespace-nowrap">
                     Utilisateurs
                   </span>
                 </Link>
               </li>
             )}
-            <li>
+            {/* <li>
               <a
                 href="/sign-in"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"
@@ -159,9 +175,9 @@ const SideBarARH = ({ Role }) => {
                   Se déconnecter
                 </span>
               </a>
-            </li>
+            </li> */}
           </ul>
-
+          {/* 
           <div className=" w-full p-4 text-center text-gray-900">
             <div className="flex flex-col items-start ml-1">
               <div className="flex-1 whitespace-nowrap">
@@ -173,7 +189,7 @@ const SideBarARH = ({ Role }) => {
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </aside>
       <div className="flex-1 ml-64 p-4 overflow-y-auto h-screen">
