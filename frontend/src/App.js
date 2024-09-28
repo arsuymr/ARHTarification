@@ -95,7 +95,7 @@ function App() {
         />
         {/** USER ARH  */}
         <Route
-          path="/user-arh/:UserID/:OperateurID"
+          path="/user-arh/:UserID/details"
           element={<DetailsOperator role="USER" />}
         />
 

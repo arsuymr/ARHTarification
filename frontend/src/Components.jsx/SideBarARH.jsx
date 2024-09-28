@@ -117,7 +117,7 @@ const SideBarARH = ({ Role }) => {
                   onClick={() => {
                     Role === "ADMIN"
                       ? navigate(`/admin-arh/${UserID}/details`)
-                      : navigate(`/user-arh/${UserID}`);
+                      : navigate(`/user-arh/${UserID}/details`);
                   }}
                 >
                   Opérateurs
