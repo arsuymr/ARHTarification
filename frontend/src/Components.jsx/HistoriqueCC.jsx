@@ -71,16 +71,13 @@ export default function HistoriqueCC({ role }) {
     return (
         <div className="flex">
             <SideBarARH Role={role} />
-            <div className="flex flex-col m-2 w-screen ">
-                <div className="p-4 pt-2 w-full">
-                    <TabDashboard role={role} />
-                </div>
-                <h1 className=" m-4 text-2xl font-extrabold  text-gradient">  Historique des controles de cout</h1>
-                <div className="mx-12">
-                    <div className="flex pt-4 justify-center gap-4 ">
-                        <div className="w-1/4 ">
+            <div className="flex flex-col w-screen ">
+                <TabDashboard role={role} />
+                <div className="mt-10 relative px-5 rounded-xl shadow-2xl border-[#D5E7F2] border-2 pb-10 mx-2">
+                    <div className="absolute -top-4 flex justify-center gap-2">
+                        <div className=" ">
                             <select
-                                className="mt-1 block w-full p-2 border-b border-blue-700"
+                                className="border-2 border-[#ECE9F1]"
                                 value={selectedOperator}
                                 onChange={(e) => {
                                     setSelectedOperator(e.target.value);
@@ -104,7 +101,7 @@ export default function HistoriqueCC({ role }) {
 
                         <div className="w-1/4 ">
                             <select
-                                className="mt-1 block w-full p-2 border-b border-blue-700"
+                                className="border-2 border-[#ECE9F1]"
                                 value={selectedUnit}
                                 onChange={(e) => setSelectedUnit(e.target.value)}
                                 disabled={!selectedOperator}
@@ -121,7 +118,8 @@ export default function HistoriqueCC({ role }) {
                         <div className="w-1/4">
                             <input
                                 type="number"
-                                className="mt-1 block w-full p-2 border-b border-blue-700 "
+                                placeholder="Date"
+                                className="border-2 border-[#ECE9F1] "
                                 value={selectedYear}
                                 onChange={(e) => setSelectedYear(e.target.value)}
                             />
@@ -134,7 +132,7 @@ export default function HistoriqueCC({ role }) {
                         </Alert>
                     </Stack>)}
                     {classes.map((classe) => (
-                        <div key={classe.ID} className="mt-8">
+                        <div key={classe.ID}>
                             <TabAffichage
                                 IDClasse={classe.ID}
                                 NomClasse={classe.NomClasse}

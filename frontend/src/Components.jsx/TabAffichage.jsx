@@ -124,7 +124,7 @@ const TabAffichage = ({ IDClasse, NomClasse, selectedYear, selectedUnit, selecte
         <div>
             {data && !error && (
                 <div key={IDClasse} className="mt-8">
-                    <div className="font-semibold text-xl ml-3 mb-4">
+                    <div className=" text-lg mb-3">
                         {NomClasse}
                     </div>
                     <TableContainer component={Paper}>
@@ -158,7 +158,7 @@ const TabAffichage = ({ IDClasse, NomClasse, selectedYear, selectedUnit, selecte
                             {IDClasse === 'TauxUtilisationID' && (
                                 <TableBody>
                                     <TableRow>
-                                        <TableCell>Taux d'Utilisation</TableCell>
+                                        <TableCell className="text-lg mb-3">Taux d'Utilisation</TableCell>
                                         {tauxUtilisation.map((taux, index) => (
                                             <TableCell key={index}>{taux}</TableCell>
                                         ))}

@@ -49,50 +49,52 @@ export default function HistoriqueOp({ role }) {
   return (
     <div className="flex">
       <SideBarOp Role={role} />
-      <div className="flex flex-col w-full mt-12">
-        <div className="flex p-4 justify-center">
-          <select
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            value={selectedUnit}
-            onChange={(e) => setSelectedUnit(e.target.value)}
-            disabled={!OperateurID}
-          >
-            <option value="">Select Unit</option>
-            {units.map((unit) => (
-              <option key={unit.UnityID} value={unit.UnityID}>
-                {unit.NomUnity}
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            min="2020"
-            max="2040"
-          />
-        </div>
-        {ErrorMessage && (
-          <Stack sx={{ width: "100%", padding: "16px" }} spacing={2}>
-            <Alert severity="info">
-              <AlertTitle>Info</AlertTitle>
-              Aucune donnée disponible pour les filtres sélectionnés.
-            </Alert>
-          </Stack>
-        )}
-        {classes.map((classe) => (
-          <div key={classe.ID} className="mt-8">
-            <TabAffichage
-              IDClasse={classe.ID}
-              NomClasse={classe.NomClasse}
-              selectedYear={selectedYear}
-              selectedUnit={selectedUnit}
-              selectedOperator={OperateurID}
-              setErrorMessage={setErrorMessage}
+      <div className="flex flex-col w-full mt-14">
+        <div className=" mt-10 relative px-5 rounded-xl shadow-2xl border-[#D5E7F2] border-2 mx-2 pb-10">
+          <div className="absolute -top-4 flex justify-center gap-2">
+            <select
+              className="border-2 border-[#ECE9F1]"
+              value={selectedUnit}
+              onChange={(e) => setSelectedUnit(e.target.value)}
+              disabled={!OperateurID}
+            >
+              <option value="">Select Unit</option>
+              {units.map((unit) => (
+                <option key={unit.UnityID} value={unit.UnityID}>
+                  {unit.NomUnity}
+                </option>
+              ))}
+            </select>
+            <input
+              type="number"
+              placeholder="Date"
+              className="border-2 border-[#ECE9F1]"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              min="2020"
             />
           </div>
-        ))}
+          {ErrorMessage && (
+            <Stack sx={{ width: "100%", padding: "16px" }} spacing={2}>
+              <Alert severity="info">
+                <AlertTitle>Info</AlertTitle>
+                Aucune donnée disponible pour les filtres sélectionnés.
+              </Alert>
+            </Stack>
+          )}
+          {classes.map((classe) => (
+            <div key={classe.ID} >
+              <TabAffichage
+                IDClasse={classe.ID}
+                NomClasse={classe.NomClasse}
+                selectedYear={selectedYear}
+                selectedUnit={selectedUnit}
+                selectedOperator={OperateurID}
+                setErrorMessage={setErrorMessage}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
