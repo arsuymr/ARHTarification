@@ -4,8 +4,6 @@ import Auth from "./Pages/Authentification";
 import TableauComplet from "./Components.jsx/tableauComplet";
 import ParamsTable from "./Components.jsx/parametresop";
 import Unites from "./Pages/Unites";
-import Dashboard from "./Components.jsx/chart";
-import Dashboard from "./Components.jsx/Simulation";
 import HistoriqueCC from "./Components.jsx/HistoriqueCC";
 import AccueilOp from "./Pages/AdminOperator/AccueilOperator";
 import GestionModARH from "./Pages/AdminARH/GestionModARH";
