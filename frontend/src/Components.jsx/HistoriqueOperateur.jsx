@@ -49,7 +49,7 @@ export default function HistoriqueOp({ role }) {
   return (
     <div className="flex">
       <SideBarOp Role={role} />
-      <div className="flex flex-col w-full mt-14">
+      <div className="flex flex-col w-full mt-14 ml-10">
         <div className=" mt-10 relative px-5 rounded-xl shadow-2xl border-[#D5E7F2] border-2 mx-2 pb-10">
           <div className="absolute -top-4 flex justify-center gap-2">
             <select

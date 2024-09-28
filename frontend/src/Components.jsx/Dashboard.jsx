@@ -36,7 +36,7 @@ const Dashboard = ({ role }) => {
     return (
         <div className='flex bg-[#FBFDFF]'>
             <SideBarARH Role={role} />
-            <div className='w-full '>
+            <div className='w-full ml-10'>
                 <TabDashboard role={role} />
                 <div className='mx-2 my-10'>
                     <div className='w-full '>
