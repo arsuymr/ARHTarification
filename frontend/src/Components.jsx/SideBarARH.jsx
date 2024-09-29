@@ -4,18 +4,14 @@ import logo_arh from "../assets/logo_arh.svg";
 import { Link, useParams } from "react-router-dom";
 import Modal from "./Modal";
 import { useNavigate } from "react-router-dom";
-import {
-  HiArrowSmRight,
-  HiChartPie,
-  HiShoppingBag,
-  HiUser,
-  HiChevronDown,
-} from "react-icons/hi";
 import AddOperator from "./AddOperator";
 import UpdatePassword from "./UpdatePassword";
 import dashboard from "../assets/dashboard.svg";
 import users from "../assets/users.svg";
 import operator from "../assets/operators.svg";
+import { IoSettings } from "react-icons/io5";
+import Vector from "../assets/Vector.svg"
+import deconnect from "../assets/deconnect.svg"
 
 const SideBarARH = ({ Role }) => {
   const { UserID } = useParams();
@@ -67,7 +63,7 @@ const SideBarARH = ({ Role }) => {
     setShowUpdatePassword(true);
   };
 
-  const handleUpdatePasswordSuccess = () => {};
+  const handleUpdatePasswordSuccess = () => { };
 
   return (
     <div
@@ -78,11 +74,11 @@ const SideBarARH = ({ Role }) => {
         <img
           src={logo_arh}
           alt="Logo ARH"
-          className="w-40 h-40"
+          className="w-40 h-50 pt-10 pr-3"
           onClick={() => getOperators()}
         />
       </div>
-      <aside className="p-8 rounded-r-2xl border-[#D5E7F2] border-[2px] fixed h-screen overflow-y-auto mt-[150px] ">
+      <aside className="bg-white p-8 rounded-r-2xl border-[#D5E7F2] border-[2px] fixed h-screen overflow-y-auto mt-[150px] ">
         <div className="px-10 py-4 mt-16">
           <ul className="space-y-2">
             <li>
@@ -97,6 +93,7 @@ const SideBarARH = ({ Role }) => {
                 <img
                   src={dashboard}
                   className=" text-gray-500 transition duration-75 group-hover:text-gray-900"
+                  alt=""
                 />
                 <span className="ml-6">Dashboard</span>
               </Link>
@@ -158,6 +155,7 @@ const SideBarARH = ({ Role }) => {
                   <img
                     src={users}
                     className=" text-gray-500 transition duration-75 group-hover:text-gray-900"
+                    alt=""
                   />
                   <span className="flex-1 ml-6 whitespace-nowrap">
                     Utilisateurs
@@ -177,19 +175,23 @@ const SideBarARH = ({ Role }) => {
               </a>
             </li> */}
           </ul>
-          {/* 
-          <div className=" w-full p-4 text-center text-gray-900">
-            <div className="flex flex-col items-start ml-1">
-              <div className="flex-1 whitespace-nowrap">
-                Connecté en tant que {user.username}
+          <div className="flex flex-col w-full justify-center space-y-2 ">
+            <div className="flex shadow-lg bg-[#F0F7FF] rounded-lg ">
+              <img src={Vector} alt="" className="w-1/4 py-2 pl-6 pr-2" />
+              <div className="w-2/4 flex flex-col justify-center p-2	">
+                <p className="text-sm font-semibold">{user.username}</p>
+                <p className="text-sm text-[#8491A5]">{user.email}</p>
               </div>
-              <div className="flex-1 whitespace-nowrap">
-                <button className="font-bold" onClick={handleUpdatePassword}>
-                  Changer mot de passe.
-                </button>
-              </div>
+              <button className="w-1/4  pr-10 "
+                onClick={() => {
+                  navigate(`/`);
+                }} > <img src={deconnect} alt="" className="w-full" /></button>
             </div>
-          </div> */}
+            <button className="flex justify-center space-x-4 text-sm font-semibold rounded-lg shadow-inner bg-[#F0F7FF] py-2 " onClick={handleUpdatePassword}>
+              <IoSettings className="h-6" />
+              <p>Changer mot de passe</p>
+            </button>
+          </div>
         </div>
       </aside>
       <div className="flex-1 ml-64 p-4 overflow-y-auto h-screen">

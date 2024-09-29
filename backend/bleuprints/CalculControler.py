@@ -81,8 +81,8 @@ def Tarif_liquefaction_separation(OperateurID, AnneeActuelle):
         if not usine_results:
             return jsonify({'error': 'Not found in usine table'}), 404
 
-        sum_quantite_GA_L = 0
         somme_div_S= 0
+        somme_div_L= 0
         tarif_liquefaction = 0
         tarif_separation = 0
         creu_results = []
@@ -139,13 +139,16 @@ def Tarif_liquefaction_separation(OperateurID, AnneeActuelle):
                         return jsonify({'error': 'les valeurs du Butane doivent etre entrer sinon c est la division par 0'}), 404
                     
                     
-                    print("\n\n\n Beraaaaa  Tyyyypeeeeeeeeeeee", typ,creu_results)
+                    print("\n\n\n Type d'unite et le resultat creu ", typ,creu_results)
 
 
                     if typ in ["liquefaction", "liquefaction et separation"]:
-                        sum_quantite_GA_L += sum(QGA)
-                        creu = CREU_Unity(CCID, AnneeActuelle, unite, usineid, OperateurID, typ, Nb_annee_prevision)
-                        tarif_liquefaction += creu[0] * sum(QGA)
+                        sum_L = 0
+                        sum_L = (sum(QGA) - QGA[0])
+                        somme_div_L +=sum_L
+                        creu = CREU_Unity(CCID, AnneeActuelle, unite, usineid, OperateurID, typ, Nb_annee_prevision, "liquefaction")
+                        tarif_liquefaction += creu[0] * sum_L
+                        print("Tarif Liquefaction --------------------", creu[0] * sum_L , tarif_liquefaction)
                         creu_results.append({
                             "NomUnity": NomUnity,
                             "Type": "liquefaction",
@@ -163,7 +166,7 @@ def Tarif_liquefaction_separation(OperateurID, AnneeActuelle):
                             print(sum_S)
 
                         somme_div_S +=sum_S
-                        creu = CREU_Unity(CCID, AnneeActuelle, unite, usineid, OperateurID, typ, Nb_annee_prevision)
+                        creu = CREU_Unity(CCID, AnneeActuelle, unite, usineid, OperateurID, typ, Nb_annee_prevision,"separation")
                         tarif_separation += creu[1] * sum_S
                         creu_results.append({
                             "NomUnity": NomUnity,
@@ -184,7 +187,7 @@ def Tarif_liquefaction_separation(OperateurID, AnneeActuelle):
                 "CREU_parsm3": item["CREU_parsm3"]
             })
         print("\n\n  Tarif liqui sepa ", tarif_liquefaction,tarif_separation)
-        tarif_liquefaction = round(tarif_liquefaction / sum_quantite_GA_L, 2) if sum_quantite_GA_L else 0
+        tarif_liquefaction = round(tarif_liquefaction / somme_div_L, 2) if somme_div_L else 0
         tarif_separation = round(tarif_separation / somme_div_S, 2) if somme_div_S else 0
 
         return jsonify({"tarif_L": tarif_liquefaction, "tarif_S": tarif_separation, "Resultat": resultat_grouped})
@@ -199,13 +202,13 @@ def Tarif_liquefaction_separation(OperateurID, AnneeActuelle):
 
     
 
-def CREU_Unity(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, n):
+def CREU_Unity(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, n, typCalcul):
 
 
-    inv_actualisee = calcul_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, "Inv", n)
-    charge_exp_actualisee = calcul_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, "CEXP", n)
-    Auto_consom_Actualisee = Auto_consomation_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, n)
-    production_actualisee = Production_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, n)
+    inv_actualisee = calcul_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, "Inv", n,typCalcul)   
+    charge_exp_actualisee = calcul_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, "CEXP", n,typCalcul)
+    Auto_consom_Actualisee = Auto_consomation_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, n,typCalcul)
+    production_actualisee = Production_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, n,typCalcul)
 
     print("inv_actualisee:", inv_actualisee)
     print("charge_exp_actualisee:", charge_exp_actualisee)
@@ -244,7 +247,7 @@ def CREU_Unity(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, n):
 
 
 
-def calcul_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, param, n):
+def calcul_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, param, n,typCalcul):
     
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -313,14 +316,18 @@ def calcul_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, 
     Resultat_Actualisee = [0] *n
 
     for i in range(n):
-        if Type == "separation":
+        if Type == "separation" or typCalcul=="separation":
             calcul_intermediere[i] = valeurs[param][i] * (valeurs['PRP'][i] + valeurs['BTN'][i]) / somme_production[i]
         else:
             calcul_intermediere[i] = valeurs[param][i]* valeurs['GNL'][i] / somme_production[i]
 
             
         if i == 0:
-            Resultat_Actualisee[i] = calcul_intermediere[i]
+            if Type == "separation" or typCalcul=="separation":
+                Resultat_Actualisee[i] =  valeurs[param][0]* (valeurs['PRP'][1] + valeurs['BTN'][1]) / somme_production[1]
+                print("resuuultat actualisees ", Resultat_Actualisee[0])
+            else : 
+                Resultat_Actualisee[i] =  valeurs[param][0]* valeurs['GNL'][1] / somme_production[1]
         else:
            puissance = math.pow(1 + TA, i-1)
            if taux_utilisation[i] < FCU:
@@ -332,7 +339,7 @@ def calcul_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, 
 
 
 
-def Auto_consomation_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, n):
+def Auto_consomation_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, n,typCalcul):
     
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -409,11 +416,14 @@ def Auto_consomation_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, Operateur
         else:
             somme_production = [valeurs['GNL'][i] + valeurs['GZL'][i] + valeurs['PRP'][i] + valeurs['BTN'][i] for i in range(n)]
   
-    if Type == "liquefaction" or Type == "liquefaction et separation":
+    if Type == "liquefaction" or (Type == "liquefaction et separation" and typCalcul=="liquefaction"):
         calcul_intermediere = [valeurs["QGA"][i] * valeurs["TAC"][i] /100 * 1000000 * valeurs['GNL'][i] / somme_production[i] / DGN for i in range(n)]
     else: 
         if Type == "separation" :
-            calcul_intermediere = [valeurs["QGNC"][i]*1000 * valeurs["FCNS"][i] for i in range( n)]
+            calcul_intermediere = [valeurs["QGNC"][i]*1000 * valeurs["FCNS"][1] for i in range( n)]
+        else:
+            if Type == "liquefaction et separation" and typCalcul=="separation":
+                calcul_intermediere = [valeurs["QGA"][i] * valeurs["TAC"][i] /100 * 1000000 * (valeurs['PRP'][i] + valeurs['BTN'][i]) / somme_production[i] / DGN for i in range(n)]
 
     Puissance = [math.pow(1 + TA, i-1) for i in range(n) ]
     Autoconsomation_Actualise = [(calcul_intermediere[i] / Puissance[i] * PGN / 1000000 ) for i in range(1, n) ]
@@ -427,7 +437,7 @@ def Auto_consomation_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, Operateur
 
 
 
-def Production_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, n ):
+def Production_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Type, n ,typCalcul):
     
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -469,7 +479,7 @@ def Production_Actualisee(CCID, AnneeActuelle, UnityID, UsineID, OperateurID, Ty
  
     Puissance = [math.pow(1 + TA, i-1) for i in range( n) ]
 
-    if Type == "liquefaction" or Type == "liquefaction et separation":
+    if Type == "liquefaction" or (Type == "liquefaction et separation" and typCalcul=="liquefaction"):
         Peoduction_Actualisee = [(valeurs['GNL'][i] / Puissance[i]/ 1000) for i in range(1, n)]
     else: 
         Peoduction_Actualisee = [((valeurs['PRP'][i]+valeurs['BTN'][i]) / Puissance[i]/ 1000)  for i in  range(1, n)]

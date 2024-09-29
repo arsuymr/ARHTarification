@@ -98,7 +98,7 @@ export default function UsineCard({ usine, isARH = true, onDelet, role }) {
           </button>
         </div>
       </div>
-      {isOpen && <Unities units={units} usine={usine} role={role} />}
+      {isOpen && <Unities units={units} usine={usine} role={role} isARH={isARH} />}
 
       <Modal open={showAddUnity} onClose={() => setShowAddUnity(false)}>
         <div

@@ -94,7 +94,7 @@ export default function ParamsTable({ role }) {
   return (
     <div className="flex justify-between ">
       <SideBarOp Role={role} />
-      <div className="w-full h-full ml-[330px] mt-15">
+      <div className="w-full h-full ml-[340px] mt-15">
         <Tabs role={role} />
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
