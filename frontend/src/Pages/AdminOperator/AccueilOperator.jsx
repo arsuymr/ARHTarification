@@ -89,7 +89,7 @@ export default function AccueilOp({ role }) {
           <img src={add} alt="alt" />
         </button>
         {Object.keys(operator).length > 0 && (
-          <OperatorCard isARH={false} operator={operator} />
+          <OperatorCard isARH={false} operator={operator} role={role} />
         )}
         <Modal open={showAddUsine} onClose={() => setShowAddUsine(false)}>
           <div

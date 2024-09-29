@@ -54,7 +54,7 @@ export default function SimulationPage({ SelectedOperator }) {
 
   const fetchData = async () => {
     try {
-      console.log(selectedParam, paramValue, SelectedOperator);
+      console.log("fetch data")
       if (SelectedOperator) {
         const date = new Date().getFullYear();
         const response = await axios.get(
@@ -109,6 +109,7 @@ export default function SimulationPage({ SelectedOperator }) {
     });
     setOpen(false);
   };
+  console.log(SelectedOperator)
   return (
     <div className="space-y-8">
       <div className="flex justify-start space-x-24 ">

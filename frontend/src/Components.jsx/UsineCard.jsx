@@ -12,11 +12,12 @@ import { useParams } from "react-router";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 
-export default function UsineCard({ usine, isARH = true, onDelet }) {
+export default function UsineCard({ usine, isARH = true, onDelet, role }) {
   const { OperateurID } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const [units, setUnits] = useState([]);
   const [showAddUnity, setShowAddUnity] = useState(false);
+  console.log("usine", usine)
   const getUnits = async (UsineID) => {
     try {
       const response = await axios.get(
@@ -62,9 +63,8 @@ export default function UsineCard({ usine, isARH = true, onDelet }) {
   return (
     <>
       <div
-        className={`flex justify-between mx-[200px] border-[#D5E7F2] border-[1px] p-5 rounded-[16px] ${
-          !isARH ? "my-[10px]" : "my-[10px]"
-        }`}
+        className={`flex justify-between mx-[200px] border-[#D5E7F2] border-[1px] p-5 rounded-[16px] ${!isARH ? "my-[10px]" : "my-[10px]"
+          }`}
         style={{
           boxShadow:
             "0px 16px 24px 0px rgba(0, 0, 0, 0.06), 0px 2px 6px 0px rgba(0, 0, 0, 0.04), 0px 0px 1px 0px rgba(0, 0, 0, 0.04)",
@@ -98,7 +98,7 @@ export default function UsineCard({ usine, isARH = true, onDelet }) {
           </button>
         </div>
       </div>
-      {isOpen && <Unities units={units} />}
+      {isOpen && <Unities units={units} usine={usine} role={role} />}
 
       <Modal open={showAddUnity} onClose={() => setShowAddUnity(false)}>
         <div

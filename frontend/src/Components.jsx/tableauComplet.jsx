@@ -126,7 +126,7 @@ export default function TableauComplet({ role }) {
   return (
     <div className="flex">
       <SideBarOp Role={role} />
-      <div className="flex flex-col w-full mx-6 mt-15">
+      <div className="flex flex-col w-full mt-15 ml-[330px]">
         <Tabs role={role} />
         {!controleCout || controleCout.valide ? (
           <div className="flex justify-center m-7 justify-items-center">

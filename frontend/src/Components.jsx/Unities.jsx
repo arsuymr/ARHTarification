@@ -3,7 +3,8 @@ import UnityCard from "./UnityCard";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 
-export default function Unities({ units }) {
+export default function Unities({ units, usine, role }) {
+  console.log(units)
   return (
     <div
       className="border-[1px] border-blue-300 mx-[250px] p-5 rounded-[16px] flex flex-wrap gap-[50px]"
@@ -13,7 +14,7 @@ export default function Unities({ units }) {
       }}
     >
       {!units.length && <div>Aucune unité à afficher.</div>}
-      {units.length > 0 && units.map((unity) => <UnityCard unity={unity} />)}
+      {units.length > 0 && units.map((unity) => <UnityCard unity={unity} usine={usine} role={role} />)}
     </div>
   );
 }

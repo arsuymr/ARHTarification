@@ -4,7 +4,7 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import UsineCard from "./UsineCard";
 import axios from "axios";
 
-export default function OperatorCard({ operator, isARH }) {
+export default function OperatorCard({ operator, isARH, role }) {
   const [isOpen, setIsOpen] = useState(false);
   const [usines, setUsines] = useState([]);
   const getUsines = async (operateurId) => {
@@ -56,7 +56,7 @@ export default function OperatorCard({ operator, isARH }) {
         {usines.length > 0 &&
           (isOpen || !isARH) &&
           usines.map((usine) => (
-            <UsineCard onDelet={onDelet} usine={usine} isARH={isARH} />
+            <UsineCard onDelet={onDelet} usine={usine} isARH={isARH} role={role} />
           ))}
       </div>
 
